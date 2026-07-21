@@ -17,21 +17,21 @@
    file size, swap the url()/format() below and update the README. ---- */
 @font-face {
     font-family: 'Almarai';
-    src: url('/fonts/almarai/Almarai-Regular.woff2') format('woff2');
+    src: url('../fonts/almarai/Almarai-Regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
     font-family: 'Almarai';
-    src: url('/fonts/almarai/Almarai-Bold.woff2') format('woff2');
+    src: url('../fonts/almarai/Almarai-Bold.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
 @font-face {
     font-family: 'Almarai';
-    src: url('/fonts/almarai/Almarai-ExtraBold.woff2') format('woff2');
+    src: url('../fonts/almarai/Almarai-ExtraBold.woff2') format('woff2');
     font-weight: 800;
     font-style: normal;
     font-display: swap;

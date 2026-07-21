@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 
+@source inline("text-rose-500 bg-rose-500 text-slate-500 bg-slate-500");
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
@@ -7,3 +8,5 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@import "../../public/css/course-flow.css";
