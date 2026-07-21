@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Course flow — shared styles
+   Colors / gradients / fonts kept identical to the original static demo.
+   Responsive behaviour is added on top via the .md: / .lg: breakpoints
+   used directly in the Blade markup, plus a couple of structural rules
+   here for the parts Tailwind utility classes can't express cleanly
+   (the phone frame, the carousel snap behaviour, the header gradients).
+   ========================================================================== */
+
+/* ---- Self-hosted Tajawal (replaces the fonts.googleapis.com link).
+   Drop the two files below into public/fonts/tajawal/ — see the README
+   in that folder for where to get them. Until those files are added,
+   the font-family list falls back to the closest system Arabic-capable
+   fonts so the page still looks right, just not pixel-identical.
+   Using the .ttf files as downloaded from Google Fonts directly — no
+   woff2 conversion needed. If you'd rather serve woff2 for the smaller
+   file size, swap the url()/format() below and update the README. ---- */
+@font-face {
+    font-family: 'Almarai';
+    src: url('/fonts/almarai/Almarai-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Almarai';
+    src: url('/fonts/almarai/Almarai-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Almarai';
+    src: url('/fonts/almarai/Almarai-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    font-family: 'Almarai', 'Segoe UI', Tahoma, Arial, sans-serif;
+    background-color: #f8fafc;
+}
+
+/* ---- Card header gradients (unchanged from the demo) ---- */
+/* ---- Card: filled entirely with the course color, no white area.
+   min-height matches the old header (60px) + description block (32px)
+   so the card keeps the same overall footprint / spacing as before,
+   just with the title centered in the middle of it instead of pinned
+   to the top. ---- */
+.card-header {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 16px 10px;
+}
+.red-header   { background: linear-gradient(135deg, #eb2929, #eb2929); }
+.green-header { background: linear-gradient(135deg, #10b981, #34d399); }
+.gray-header  { background: linear-gradient(135deg, #64748b, #94a3b8); }
+.blue-header  { background: linear-gradient(135deg, #0b7af1, #0b7af1); }
+
+/* ---- Course card ---- */
+.course-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+/* Mobile: horizontal snap carousel, exactly like the original phone demo.
+   scroll-snap-type is "proximity" rather than "mandatory" so a fast swipe
+   can sail past several cards in one go instead of being caught by every
+   snap point — makes it much quicker to flick all the way to the last
+   card. -webkit-overflow-scrolling adds native momentum/inertia on iOS. */
+.carousel-container {
+    display: flex;
+    overflow-x: auto;
+    /* scroll-snap-type: x proximity; */
+    scroll-behavior:auto;
+    /* -webkit-overflow-scrolling: touch; */
+    gap: 12px;
+    padding: 10px 20px;
+    scrollbar-width: none;
+}
+.carousel-container::-webkit-scrollbar { display: none; }
+
+.carousel-container .course-card {
+    flex: 0 0 220px;
+    scroll-snap-align: center;
+}
+
+/* Desktop / tablet (md and up): let cards wrap into a grid instead of
+   forcing a horizontal scroll — better use of the extra width. */
+@media (min-width: 768px) {
+    .carousel-container {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        justify-content: center;
+        padding: 10px 24px 24px;
+    }
+    .carousel-container .course-card {
+        flex: 0 1 240px;
+    }
+}
+
+/* ---- Optional phone frame (used only when the "device preview" wrapper
+   is enabled — see resources/views/courses/show.blade.php) ---- */
+.phone-mockup {
+    width: 375px;
+    height: 812px;
+    background: white;
+    border: 12px solid #0f172a;
+    border-radius: 50px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Wide-screen page frame (used instead of the phone mockup on
+   web / tablet widths) ---- */
+.course-flow-page {
+    width: 100%;
+    max-width: 640px;
+    background: white;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: none;
+    border: none;
+}
+
+@media (min-width: 768px) {
+    .course-flow-page {
+        border-radius: 24px;
+        box-shadow: 0 20px 60px -20px rgba(15, 23, 42, 0.25);
+        border: 1px solid #f1f5f9;
+    }
+}
+
+@media (min-width: 1024px) {
+    .course-flow-page {
+        max-width: 860px;
+    }
+}
