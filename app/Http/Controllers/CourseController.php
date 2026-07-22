@@ -55,6 +55,12 @@ class CourseController extends Controller
                 'code' => 'ITDS320',
                 'description' => 'تحليل البيانات الضخمة.',
             ],
+            [
+                'variant' => 'green',
+                'title' => 'برمجة الإنترنت المتقدمة',
+                'code' => 'ITSE414',
+                'description' => 'تحليل البيانات الضخمة.',
+            ],
         ];
 
         $prerequisites = [

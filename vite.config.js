@@ -5,8 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     server: {
         host: '0.0.0.0',   // listen on all network interfaces, not just localhost
+        cors: true,
         hmr: {
-            host: '192.168.0.103', // your dev machine's LAN IP
+            host: '192.168.0.104', // your dev machine's LAN IP
         },
     },
     plugins: [
