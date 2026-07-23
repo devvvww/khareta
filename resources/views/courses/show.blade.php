@@ -10,19 +10,23 @@
 
         {{-- Section 1: Unlocked courses (top) --}}
         <div class="pt-10 pb-4 bg-slate-50/50">
-            <x-section-header color="rose-500">
+            <x-section-header color="slate-500">
                 مواد تتطلب هذه المادة :
             </x-section-header>
 
-            <div class="carousel-container">
-                @foreach ($unlocks as $item)
-                    <x-course-card
-                        :variant="$item['variant']"
-                        :title="$item['title']"
-                        :code="$item['code'] ?? ''"
-                    />
-                @endforeach
-            </div>
+            @if ($unlocks->isEmpty())
+                <p class="text-slate-400 text-sm text-center px-6 py-4">لا توجد مواد تتطلب هذه المادة</p>
+            @else
+                <div class="carousel-container">
+                    @foreach ($unlocks as $item)
+                        <x-course-card
+                            :color="$item['color']"
+                            :title="$item['title']"
+                            :code="$item['code'] ?? ''"
+                        />
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         {{-- Section 2: Current course (middle) --}}
@@ -32,7 +36,8 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-md px-6 py-10 md:py-12 rounded-3xl bg-[#0b7af1] text-white shadow-2xl shadow-blue-200 text-center">
+                <div class="w-full max-w-md px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
+                     style="background: {{ $course['color'] ?? '#0b7af1' }};">
                     <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة المختارة</span>
                     <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $course['title'] }}</h1>
                     @if (!empty($course['code']))
@@ -52,15 +57,19 @@
                مواد مطلوبة لهذه المادة :
             </x-section-header>
 
-            <div class="carousel-container">
-                @foreach ($prerequisites as $item)
-                    <x-course-card
-                        :variant="$item['variant']"
-                        :title="$item['title']"
-                        :code="$item['code'] ?? ''"
-                    />
-                @endforeach
-            </div>
+            @if ($prerequisites->isEmpty())
+                <p class="text-slate-400 text-sm text-center px-6 py-4">لا توجد مواد مطلوبة لهذه المادة</p>
+            @else
+                <div class="carousel-container">
+                    @foreach ($prerequisites as $item)
+                        <x-course-card
+                            :color="$item['color']"
+                            :title="$item['title']"
+                            :code="$item['code'] ?? ''"
+                        />
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 </div>
