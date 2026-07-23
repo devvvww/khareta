@@ -102,13 +102,27 @@ body {
     display: none;
 }
 
+.carousel-container a {
+    display: block;
+    flex: 0 0 220px;
+    scroll-snap-align: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.carousel-container a .course-card {
+    height: 100%;
+}
+
+/* 
 .carousel-container .course-card {
     flex: 0 0 220px;
     scroll-snap-align: center;
-}
+} */
 
 /* Desktop / tablet (md and up): let cards wrap into a grid instead of
    forcing a horizontal scroll — better use of the extra width. */
+   
 @media (min-width: 768px) {
     .carousel-container {
         flex-wrap: wrap;
@@ -116,11 +130,23 @@ body {
         justify-content: center;
         padding: 10px 24px 24px;
     }
-
-    .carousel-container .course-card {
+    .carousel-container a {
         flex: 0 1 240px;
     }
 }
+
+   /* @media (min-width: 768px) {
+    .carousel-container {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        justify-content: center;
+        padding: 10px 24px 24px;
+    }
+
+    /* .carousel-container .course-card {
+        flex: 0 1 240px;
+    } */
+} */
 
 /* ---- Optional phone frame (used only when the "device preview" wrapper
    is enabled — see resources/views/courses/show.blade.php) ---- */
