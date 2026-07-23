@@ -1,20 +1,15 @@
-/* ==========================================================================
-   Course flow — shared styles
-   Colors / gradients / fonts kept identical to the original static demo.
-   Responsive behaviour is added on top via the .md: / .lg: breakpoints
-   used directly in the Blade markup, plus a couple of structural rules
-   here for the parts Tailwind utility classes can't express cleanly
-   (the phone frame, the carousel snap behaviour, the header gradients).
-   ========================================================================== */
 
-/* ---- Self-hosted Tajawal (replaces the fonts.googleapis.com link).
-   Drop the two files below into public/fonts/tajawal/ — see the README
-   in that folder for where to get them. Until those files are added,
-   the font-family list falls back to the closest system Arabic-capable
-   fonts so the page still looks right, just not pixel-identical.
-   Using the .ttf files as downloaded from Google Fonts directly — no
-   woff2 conversion needed. If you'd rather serve woff2 for the smaller
-   file size, swap the url()/format() below and update the README. ---- */
+
+@view-transition {
+    navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @view-transition {
+        navigation: none;
+    }
+}
+
 @font-face {
     font-family: 'Almarai';
     src: url('../fonts/almarai/Almarai-Regular.woff2') format('woff2');
@@ -22,6 +17,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: 'Almarai';
     src: url('../fonts/almarai/Almarai-Bold.woff2') format('woff2');
@@ -29,6 +25,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 @font-face {
     font-family: 'Almarai';
     src: url('../fonts/almarai/Almarai-ExtraBold.woff2') format('woff2');
@@ -59,10 +56,22 @@ body {
     text-align: center;
     padding: 16px 10px;
 }
-.red-header   { background: linear-gradient(135deg, #eb2929, #eb2929); }
-.green-header { background: linear-gradient(135deg, #10b981, #34d399); }
-.gray-header  { background: linear-gradient(135deg, #64748b, #94a3b8); }
-.blue-header  { background: linear-gradient(135deg, #0b7af1, #0b7af1); }
+
+.red-header {
+    background: linear-gradient(135deg, #eb2929, #eb2929);
+}
+
+.green-header {
+    background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.gray-header {
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+}
+
+.blue-header {
+    background: linear-gradient(135deg, #0b7af1, #0b7af1);
+}
 
 /* ---- Course card ---- */
 .course-card {
@@ -82,13 +91,16 @@ body {
     display: flex;
     overflow-x: auto;
     /* scroll-snap-type: x proximity; */
-    scroll-behavior:auto;
+    scroll-behavior: auto;
     /* -webkit-overflow-scrolling: touch; */
     gap: 12px;
     padding: 10px 20px;
     scrollbar-width: none;
 }
-.carousel-container::-webkit-scrollbar { display: none; }
+
+.carousel-container::-webkit-scrollbar {
+    display: none;
+}
 
 .carousel-container .course-card {
     flex: 0 0 220px;
@@ -104,6 +116,7 @@ body {
         justify-content: center;
         padding: 10px 24px 24px;
     }
+
     .carousel-container .course-card {
         flex: 0 1 240px;
     }
@@ -146,5 +159,48 @@ body {
 @media (min-width: 1024px) {
     .course-flow-page {
         max-width: 860px;
+    }
+}
+
+.course-card-enter {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: cardFadeIn 0.35s ease forwards;
+}
+
+@keyframes cardFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#search-results {
+    transition: opacity 0.15s ease;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.25s;
+    animation-timing-function: ease;
+}
+
+::view-transition-old(root) {
+    animation-name: fadeOut;
+}
+
+::view-transition-new(root) {
+    animation-name: fadeIn;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
 }
