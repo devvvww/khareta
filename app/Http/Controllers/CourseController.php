@@ -47,11 +47,13 @@ class CourseController extends Controller
                 'color' => $course->color ?: '#0b7af1'
             ],
             'unlocks' => $course->requiredForCourses->map(fn($c) => [
+                'id' => $c->id,
                 'color' => $c->color ?: '#64748b',
                 'title' => $c->name,
                 'code' => $c->code,
             ]),
             'prerequisites' => $course->prerequisites->map(fn($c) => [
+                'id' => $c->id,
                 'color' => $c->color ?: '#64748b',
                 'title' => $c->name,
                 'code' => $c->code,
