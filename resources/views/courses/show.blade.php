@@ -5,7 +5,6 @@
 @section('content')
 <div class="flex flex-col items-center justify-center min-h-screen p-0 md:p-6">
 
-    
     <div class="course-flow-page flex flex-col min-h-screen md:min-h-0">
 
         {{-- Section 1: Unlocked courses (top) --}}
@@ -37,16 +36,32 @@
                 <span class="text-slate-400 text-4xl font-bold leading-none">↑</span>
             </div>
 
-            <div class="flex justify-center">
-                <div class="w-full max-w-md px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
-                     style="background: {{ $course['color'] ?? '#0b7af1' }};">
-                    <span class="block text-center text-[13px] uppercase tracking-widest opacity-80">المادة المختارة</span>
-                    <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $course['title'] }}</h1>
-                    @if (!empty($course['code']))
-                        <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2" dir="ltr">{{ $course['code'] }}</span>
-                    @endif
+            @if ($carousel->count() > 1)
+                <div id="course-carousel" class="course-carousel">
+                    @foreach ($carousel as $item)
+                        <a href="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids='.$idsParam : '' }}"
+                           class="course-carousel-slide block rounded-3xl text-white shadow-2xl text-center px-6 py-10 md:py-12"
+                           style="background: {{ $item['color'] }};">
+                            <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة المختارة</span>
+                            <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $item['title'] }}</h1>
+                            @if (!empty($item['code']))
+                                <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2" dir="ltr">{{ $item['code'] }}</span>
+                            @endif
+                        </a>
+                    @endforeach
                 </div>
-            </div>
+            @else
+                <div class="flex justify-center">
+                    <div class="w-full max-w-md px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
+                         style="background: {{ $course['color'] ?? '#0b7af1' }};">
+                        <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة المختارة</span>
+                        <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $course['title'] }}</h1>
+                        @if (!empty($course['code']))
+                            <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2" dir="ltr">{{ $course['code'] }}</span>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             <div class="flex-1 flex items-center justify-center">
                 <span class="text-slate-400 text-4xl font-bold leading-none">↑</span>
@@ -78,3 +93,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const carousel = document.getElementById('course-carousel');
+    if (carousel) {
+        const slides = [...carousel.querySelectorAll('.course-carousel-slide')];
+
+        function updateCarouselScale() {
+            const center = carousel.scrollLeft + carousel.offsetWidth / 2;
+            slides.forEach(slide => {
+                const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+                const distance = Math.abs(center - slideCenter);
+                const ratio = Math.max(0, 1 - distance / carousel.offsetWidth);
+                slide.style.transform = `scale(${0.8 + ratio * 0.2})`;
+                slide.style.opacity = 0.45 + ratio * 0.55;
+            });
+        }
+
+        carousel.addEventListener('scroll', updateCarouselScale);
+        window.addEventListener('resize', updateCarouselScale);
+        updateCarouselScale();
+    }
+</script>
+@endpush
