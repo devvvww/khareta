@@ -11,13 +11,6 @@
          kept here only to mirror the original static demo 1:1. --}}
     {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
 
-    {{-- Temporary for debuging  --}}
-    @if (app()->environment('local'))
-        <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-        <script>
-            eruda.init();
-        </script>
-    @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
