@@ -19,11 +19,13 @@
             @else
                 <div class="carousel-container">
                     @foreach ($unlocks as $item)
-                        <x-course-card
-                            :color="$item['color']"
-                            :title="$item['title']"
-                            :code="$item['code'] ?? ''"
-                        />
+                        <a href="{{ route('courses.show', $item['id']) }}">
+                            <x-course-card
+                                :color="$item['color']"
+                                :title="$item['title']"
+                                :code="$item['code'] ?? ''"
+                            />
+                        </a>
                     @endforeach
                 </div>
             @endif
@@ -38,7 +40,7 @@
             <div class="flex justify-center">
                 <div class="w-full max-w-md px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
                      style="background: {{ $course['color'] ?? '#0b7af1' }};">
-                    <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة المختارة</span>
+                    <span class="block text-center text-[13px] uppercase tracking-widest opacity-80">المادة المختارة</span>
                     <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $course['title'] }}</h1>
                     @if (!empty($course['code']))
                         <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2" dir="ltr">{{ $course['code'] }}</span>
@@ -62,11 +64,13 @@
             @else
                 <div class="carousel-container">
                     @foreach ($prerequisites as $item)
-                        <x-course-card
-                            :color="$item['color']"
-                            :title="$item['title']"
-                            :code="$item['code'] ?? ''"
-                        />
+                        <a href="{{ route('courses.show', $item['id']) }}">
+                            <x-course-card
+                                :color="$item['color']"
+                                :title="$item['title']"
+                                :code="$item['code'] ?? ''"
+                            />
+                        </a>
                     @endforeach
                 </div>
             @endif
