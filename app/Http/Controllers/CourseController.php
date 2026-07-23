@@ -36,66 +36,88 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        $course = [
-            'title' => 'مقدمة في قواعد البيانات',
-            'code' => 'ITCS214',
-            'description' => 'الأساس المتين لفهم كيفية تخزين وإدارة البيانات بكفاءة عالية.',
-        ];
 
-        $unlocks = [
-            [
-                'variant' => 'red',
-                'title' => 'برمجة ويب متقدمة',
-                'code' => 'ITWS310',
-                'description' => 'بناء تطبيقات ويب متكاملة.',
-            ],
-            [
-                'variant' => 'green',
-                'title' => 'تنقيب البيانات',
-                'code' => 'ITDS320',
-                'description' => 'تحليل البيانات الضخمة.',
-            ],
-            [
-                'variant' => 'green',
-                'title' => 'برمجة الإنترنت المتقدمة',
-                'code' => 'ITSE414',
-                'description' => 'تحليل البيانات الضخمة.',
-            ],
-        ];
+        $course->load(['prerequisites', 'requiredForCourses']);
 
-        $prerequisites = [
-            [
-                'variant' => 'blue',
-                'title' => 'برمجة 1',
-                'code' => 'ITCS101',
-                'description' => 'أساسيات البرمجة بلغة C++.',
+        return view('courses.show', [
+            'course' => [
+                'title' => $course->name,
+                'code' => $course->code,
+                'description' => $course->description,
             ],
-            [
-                'variant' => 'blue',
-                'title' => 'تراكيب محددة',
-                'code' => 'ITMA102',
-                'description' => 'المنطق والرياضيات المتقطعة.',
-            ],
-            [
-                'variant' => 'blue',
-                'title' => 'مهارات الحاسب',
-                'code' => 'ITGS101',
-                'description' => 'مقدمة في تقنية المعلومات.',
-            ],
-            [
-                'variant' => 'blue',
-                'title' => 'تراكيب محددة',
-                'code' => 'ITMA102',
-                'description' => 'المنطق والرياضيات المتقطعة.',
-            ],
-            [
-                'variant' => 'blue',
-                'title' => 'مهارات الحاسب',
-                'code' => 'ITGS101',
-                'description' => 'مقدمة في تقنية المعلومات.',
-            ],
-        ];
-        return view('courses.show', compact('course', 'unlocks', 'prerequisites'));
+            'unlocks' => $course->requiredForCourses->map(fn($c) => [
+                'color' => $c->color ?: '#64748b',
+                'title' => $c->name,
+                'code' => $c->code,
+            ]),
+            'prerequisites' => $course->prerequisites->map(fn($c) => [
+                'color' => $c->color ?: '#64748b',
+                'title' => $c->name,
+                'code' => $c->code,
+            ]),
+        ]);
+        // $course = [
+        //     'title' => 'مقدمة في قواعد البيانات',
+        //     'code' => 'ITCS214',
+        //     'description' => 'الأساس المتين لفهم كيفية تخزين وإدارة البيانات بكفاءة عالية.',
+        // ];
+
+        // $unlocks = [
+        //     [
+        //         'variant' => 'red',
+        //         'title' => 'برمجة ويب متقدمة',
+        //         'code' => 'ITWS310',
+        //         'description' => 'بناء تطبيقات ويب متكاملة.',
+        //     ],
+        //     [
+        //         'variant' => 'green',
+        //         'title' => 'تنقيب البيانات',
+        //         'code' => 'ITDS320',
+        //         'description' => 'تحليل البيانات الضخمة.',
+        //     ],
+        //     [
+        //         'variant' => 'green',
+        //         'title' => 'برمجة الإنترنت المتقدمة',
+        //         'code' => 'ITSE414',
+        //         'description' => 'تحليل البيانات الضخمة.',
+        //     ],
+        // ];
+
+        // $prerequisites = [
+        //     [
+        //         'variant' => 'blue',
+        //         'title' => 'برمجة 1',
+        //         'code' => 'ITCS101',
+        //         'description' => 'أساسيات البرمجة بلغة C++.',
+        //     ],
+        //     [
+        //         'variant' => 'blue',
+        //         'title' => 'تراكيب محددة',
+        //         'code' => 'ITMA102',
+        //         'description' => 'المنطق والرياضيات المتقطعة.',
+        //     ],
+        //     [
+        //         'variant' => 'blue',
+        //         'title' => 'مهارات الحاسب',
+        //         'code' => 'ITGS101',
+        //         'description' => 'مقدمة في تقنية المعلومات.',
+        //     ],
+        //     [
+        //         'variant' => 'blue',
+        //         'title' => 'تراكيب محددة',
+        //         'code' => 'ITMA102',
+        //         'description' => 'المنطق والرياضيات المتقطعة.',
+        //     ],
+        //     [
+        //         'variant' => 'blue',
+        //         'title' => 'مهارات الحاسب',
+        //         'code' => 'ITGS101',
+        //         'description' => 'مقدمة في تقنية المعلومات.',
+        //     ],
+        // ];
+
+
+        // return view('courses.show', compact('course', 'unlocks', 'prerequisites'));
     }
 
     /**
