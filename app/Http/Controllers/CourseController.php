@@ -34,7 +34,7 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Course $course,Request $request)
+    public function show(Course $course, Request $request)
     {
         $course->load(['prerequisites', 'requiredForCourses']);
 
@@ -60,7 +60,7 @@ class CourseController extends Controller
             'color' => $c->color ?: '#0b7af1',
         ]));
 
-        return view('courses.show', [
+        $payload = [
             'course' => [
                 'title' => $course->name,
                 'code' => $course->code,
@@ -81,7 +81,13 @@ class CourseController extends Controller
             ]),
             'carousel' => $carousel,
             'idsParam' => $idsParam,
-        ]);
+        ];
+
+        if ($request->wantsJson()) {
+            return response()->json($payload);
+        }
+
+        return view('courses.show', $payload);
     }
 
     /**
