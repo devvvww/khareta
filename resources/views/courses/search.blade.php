@@ -12,7 +12,7 @@
                 <div class="relative">
                     {{-- Tag-input style field: chips + text input live inside the same box --}}
                     <div id="search-input-wrapper"
-                        class="w-full flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 pe-9 focus-within:ring-2 focus-within:ring-[#0b7af1] cursor-text max-h-24 overflow-y-auto">
+                        class="w-full flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 pe-16 focus-within:ring-2 focus-within:ring-[#0b7af1] cursor-text max-h-24 overflow-y-auto">
                         <div id="chips-container" class="flex flex-wrap gap-1.5"></div>
                         <input type="text" id="search-input" placeholder="ابحث باسم المادة أو الرمز..."
                             class="flex-1 min-w-[100px] border-none outline-none focus:ring-0 text-sm py-1 bg-transparent"
@@ -20,9 +20,9 @@
                     </div>
 
                     <button id="clear-all-btn" type="button" title="مسح الكل"
-                        class="hidden absolute top-1/2 -translate-y-1/2 end-2 items-center gap-1 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 px-2 py-1">
-                        <span id="selection-count-badge" class="text-[10px] font-bold"></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                        class="hidden absolute top-1/2 -translate-y-1/2 end-2 items-center gap-1.5 rounded-full bg-[#0b7af1]/10 text-[#0b7af1] hover:bg-[#0b7af1]/20 px-2.5 py-1.5">
+                        <span id="selection-count-badge" class="text-xs font-bold"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -192,13 +192,14 @@
 
         function renderChips() {
             chipsContainer.innerHTML = [...selectedCourses.entries()].map(([id, c]) => `
-            <span class="inline-flex items-center gap-1 bg-[#0b7af1]/10 text-[#0b7af1] rounded-md ps-2 pe-1 py-0.5 text-xs font-medium">
-                <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background: ${c.color};"></span>
-                <span class="max-w-[90px] truncate">${c.name}</span>
-                <button type="button" class="remove-chip w-4 h-4 flex items-center justify-center rounded-full hover:bg-[#0b7af1]/20 text-sm leading-none" data-id="${id}">×</button>
-            </span>
-        `).join('');
+        <span class="inline-flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] rounded-lg ps-2.5 pe-1.5 py-1 text-sm font-medium">
+            <span class="w-2 h-2 rounded-full shrink-0" style="background: ${c.color};"></span>
+            <span class="max-w-[110px] truncate">${c.name}</span>
+            <button type="button" class="remove-chip w-5 h-5 flex items-center justify-center rounded-full hover:bg-[#0b7af1]/20 text-base leading-none" data-id="${id}">×</button>
+        </span>
+    `).join('');
 
+            selectionCountBadge.textContent = selectedCourses.size;
             clearAllBtn.classList.toggle('hidden', selectedCourses.size === 0);
             clearAllBtn.classList.toggle('flex', selectedCourses.size > 0);
         }
@@ -224,21 +225,6 @@
             div.textContent = str;
             return div.innerHTML;
         }
-
-        function renderChips() {
-            chipsContainer.innerHTML = [...selectedCourses.entries()].map(([id, c]) => `
-        <span class="inline-flex items-center gap-1 bg-[#0b7af1]/10 text-[#0b7af1] rounded-md ps-2 pe-1 py-0.5 text-xs font-medium">
-            <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background: ${c.color};"></span>
-            <span class="max-w-[90px] truncate">${c.name}</span>
-            <button type="button" class="remove-chip w-4 h-4 flex items-center justify-center rounded-full hover:bg-[#0b7af1]/20 text-sm leading-none" data-id="${id}">×</button>
-        </span>
-    `).join('');
-
-            selectionCountBadge.textContent = selectedCourses.size;
-            clearAllBtn.classList.toggle('hidden', selectedCourses.size === 0);
-            clearAllBtn.classList.toggle('flex', selectedCourses.size > 0);
-        }
-
 
         function positionViewBar() {
             if (!window.visualViewport) return;
