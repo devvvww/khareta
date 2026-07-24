@@ -284,3 +284,8 @@ body {
 #chips-container {
     scrollbar-width: thin;
 }
+
+#unlocks-section,
+#prerequisites-section {
+    will-change: transform, opacity;
+}
