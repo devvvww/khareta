@@ -19,14 +19,25 @@
                             autofocus autocomplete="off">
                     </div>
 
-                    <button id="clear-all-btn" type="button" title="مسح الكل"
-                        class="hidden absolute top-1/2 -translate-y-1/2 end-2 items-center gap-1.5 rounded-full bg-[#0b7af1]/10 text-[#0b7af1] hover:bg-[#0b7af1]/20 px-2.5 py-1.5">
-                        <span id="selection-count-badge" class="text-xs font-bold"></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div class="absolute top-1/2 -translate-y-1/2 end-2 flex items-center gap-1">
+                        <button id="clear-all-btn" type="button" title="مسح الكل"
+                            class="hidden items-center gap-1.5 rounded-full bg-[#0b7af1]/10 text-[#0b7af1] hover:bg-[#0b7af1]/20 px-2.5 py-1.5">
+                            <span id="selection-count-badge" class="text-xs font-bold"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <button id="toggle-all-btn" type="button" title="عرض كل المواد"
+                            class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+                            <svg id="toggle-all-icon" xmlns="http://www.w3.org/2000/svg"
+                                class="w-4 h-4 transition-transform" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
 
                     {{-- Live results dropdown --}}
                     <div id="search-menu"
@@ -62,6 +73,9 @@
         const viewBar = document.getElementById('view-bar');
         const viewSelectionBtn = document.getElementById('view-selection-btn');
         const selectionCountBadge = document.getElementById('selection-count-badge');
+        const toggleAllBtn = document.getElementById('toggle-all-btn');
+        const toggleAllIcon = document.getElementById('toggle-all-icon');
+        let showingAll = false;
 
         const selectedCourses = new Map();
         let debounceTimer;
@@ -73,10 +87,11 @@
                 input.focus();
             }
         });
-
         input.addEventListener('input', () => {
             clearTimeout(debounceTimer);
             const q = input.value.trim();
+            showingAll = false;
+            toggleAllIcon.style.transform = 'rotate(0deg)';
 
             if (!q) {
                 searchMenu.classList.add('hidden');
@@ -86,7 +101,7 @@
             }
 
             searchMenu.classList.remove('hidden');
-            debounceTimer = setTimeout(() => runSearch(q), 300);
+            debounceTimer = setTimeout(() => fetchAndRender(q), 300);
         });
 
         document.addEventListener('click', (e) => {
@@ -106,8 +121,8 @@
             }
         });
 
-        async function runSearch(q) {
-            status.textContent = 'جارِ البحث...';
+        async function fetchAndRender(q) {
+            status.textContent = 'جارِ التحميل...';
             results.innerHTML = '';
 
             try {
@@ -119,30 +134,30 @@
                 const courses = await res.json();
 
                 if (courses.length === 0) {
-                    status.textContent = `لا توجد نتائج لـ "${q}"`;
+                    status.textContent = q ? `لا توجد نتائج لـ "${q}"` : 'لا توجد مواد متاحة';
                     return;
                 }
 
                 status.textContent = '';
                 results.innerHTML = courses.map(course => `
-                <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                    <label class="shrink-0 cursor-pointer">
-                        <input type="checkbox" class="course-checkbox w-4 h-4 accent-[#0b7af1]"
-                               data-id="${course.id}"
-                               data-name="${escapeHtml(course.name)}"
-                               data-code="${escapeHtml(course.code || '')}"
-                               data-color="${course.color}"
-                               ${selectedCourses.has(course.id) ? 'checked' : ''}>
-                    </label>
-                    <a href="/courses/${course.id}" class="flex items-center gap-2 min-w-0 flex-1">
-                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
-                        <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
-                        ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
-                    </a>
-                </div>
-            `).join('');
+            <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
+                <label class="shrink-0 cursor-pointer">
+                    <input type="checkbox" class="course-checkbox w-4 h-4 accent-[#0b7af1]"
+                           data-id="${course.id}"
+                           data-name="${escapeHtml(course.name)}"
+                           data-code="${escapeHtml(course.code || '')}"
+                           data-color="${course.color}"
+                           ${selectedCourses.has(course.id) ? 'checked' : ''}>
+                </label>
+                <a href="/courses/${course.id}" class="flex items-center gap-2 min-w-0 flex-1">
+                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
+                    <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
+                    ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
+                </a>
+            </div>
+        `).join('');
             } catch (e) {
-                status.textContent = 'حدث خطأ أثناء البحث';
+                status.textContent = 'حدث خطأ أثناء التحميل';
             }
         }
 
@@ -225,6 +240,23 @@
             div.textContent = str;
             return div.innerHTML;
         }
+
+        toggleAllBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (showingAll) {
+                searchMenu.classList.add('hidden');
+                showingAll = false;
+                toggleAllIcon.style.transform = 'rotate(0deg)';
+                return;
+            }
+
+            input.value = '';
+            searchMenu.classList.remove('hidden');
+            showingAll = true;
+            toggleAllIcon.style.transform = 'rotate(180deg)';
+            fetchAndRender('');
+        });
 
         function positionViewBar() {
             if (!window.visualViewport) return;
