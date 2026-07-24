@@ -22,7 +22,7 @@ class CourseSearchController extends Controller
                     });
                 })
                 ->orderBy('name')
-                ->limit(20)
+                ->limit($query ? 20 : 100)
                 ->get()
                 ->map(fn($c) => [
                     'id' => $c->id,
@@ -33,7 +33,7 @@ class CourseSearchController extends Controller
 
             return response()->json($courses);
         }
-
+        
         return view('courses.search');
     }
 
