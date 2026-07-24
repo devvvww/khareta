@@ -235,8 +235,8 @@ body {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    gap: 16px;
-    padding: 10px 15%;
+    gap: 8px;
+    padding: 10px 10%;
     scrollbar-width: none;
 }
 
@@ -245,11 +245,15 @@ body {
 }
 
 .course-carousel-slide {
-    flex: 0 0 70%;
-    max-width: 320px;
+    flex: 0 0 100%;
+    max-width: 480px;
     scroll-snap-align: center;
     transition: transform 0.15s ease, opacity 0.15s ease;
     text-decoration: none;
+}
+
+.slide-label {
+    transition: opacity 0.15s ease;
 }
 
 .carousel-container a {
