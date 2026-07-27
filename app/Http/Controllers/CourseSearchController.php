@@ -22,7 +22,7 @@ class CourseSearchController extends Controller
                     });
                 })
                 ->orderBy('name')
-                ->limit(20)
+                ->limit($query ? 20 : 100)
                 ->get()
                 ->map(fn($c) => [
                     'id' => $c->id,
@@ -34,7 +34,28 @@ class CourseSearchController extends Controller
             return response()->json($courses);
         }
 
-        return view('courses.search');
+        $idsParam = $request->query('ids');
+        $initialSelection = collect();
+
+        if ($idsParam) {
+            $ids = array_values(array_unique(array_filter(array_map('intval', explode(',', $idsParam)))));
+
+            $initialSelection = Course::whereIn('id', $ids)
+                ->get()
+                ->sortBy(fn($c) => array_search($c->id, $ids))
+                ->values()
+                ->map(fn($c) => [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'code' => $c->code,
+                    'color' => $c->color ?: '#64748b',
+                ]);
+        }
+
+        return view('courses.search', [
+            'initialSelection' => $initialSelection,
+        ]);
+        
     }
 
     /**

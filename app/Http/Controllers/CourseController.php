@@ -34,11 +34,13 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Course $course,Request $request)
+    public function show(Course $course, Request $request)
     {
         $course->load(['prerequisites', 'requiredForCourses']);
 
         $idsParam = $request->query('ids');
+        $selectedParam = $request->query('selected', $idsParam);
+
         $selectedIds = $idsParam
             ? array_values(array_unique(array_filter(array_map('intval', explode(',', $idsParam)))))
             : [];
@@ -60,7 +62,7 @@ class CourseController extends Controller
             'color' => $c->color ?: '#0b7af1',
         ]));
 
-        return view('courses.show', [
+        $payload = [
             'course' => [
                 'title' => $course->name,
                 'code' => $course->code,
@@ -81,9 +83,16 @@ class CourseController extends Controller
             ]),
             'carousel' => $carousel,
             'idsParam' => $idsParam,
-        ]);
-    }
+            'selectedParam' => $selectedParam,
+        ];
 
+        if ($request->wantsJson()) {
+            return response()->json($payload);
+        }
+
+        return view('courses.show', $payload);
+    }
+    
     /**
      * Show the form for editing the specified resource.
      */
