@@ -3,6 +3,17 @@
 @section('title', $course['title'] . ' — مسار المواد الدراسية')
 
 @section('content')
+
+    <a href="{{ route('courses.search') }}{{ $selectedParam ? '?ids=' . $selectedParam : '' }}"
+        class="fixed top-4 end-4 z-40 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg text-slate-500 hover:text-[#0b7af1]"
+        title="بحث">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z" />
+        </svg>
+    </a>
+
     <div class="flex flex-col items-center justify-center min-h-screen p-0 md:p-6">
 
         <div class="course-flow-page flex flex-col min-h-screen md:min-h-0">
@@ -26,9 +37,9 @@
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <a href="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}"
-                                class="course-carousel-slide block rounded-3xl text-white text-center px-6 py-10 md:py-12"
-                                style="background: {{ $item['color'] }};">
+                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-10 md:py-12"
+                                style="background: {{ $item['color'] }};"
+                                data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <span
                                     class="slide-label block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
                                     المختارة</span>
@@ -37,12 +48,12 @@
                                     <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2"
                                         dir="ltr">{{ $item['code'] }}</span>
                                 @endif
-                            </a>
+                            </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="px-6 md:px-0 flex justify-center">
-                        <div class="w-full max-w-md px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
+                    <div class="px-[10%] flex justify-center">
+                        <div class="current-course-card w-full px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
                             style="background: {{ $course['color'] ?? '#0b7af1' }};">
                             <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
                                 المختارة</span>
@@ -102,23 +113,24 @@
             }
 
             function slideSectionsIn(direction) {
-                // direction: 1 = new content enters from the end side, -1 = from the start side
                 const offset = direction * 24;
+                const bodies = [
+                    unlocksSection.querySelector('.section-body'),
+                    prerequisitesSection.querySelector('.section-body'),
+                ].filter(Boolean);
 
-                [unlocksSection, prerequisitesSection].forEach(section => {
-                    section.style.transition = 'none';
-                    section.style.transform = `translateX(${offset}px)`;
-                    section.style.opacity = '0';
+                bodies.forEach(body => {
+                    body.style.transition = 'none';
+                    body.style.transform = `translateX(${offset}px)`;
+                    body.style.opacity = '0';
                 });
 
-                // Force a reflow so the browser registers the starting state
-                // before we animate to the resting state.
-                void unlocksSection.offsetWidth;
+                void bodies[0]?.offsetWidth;
 
-                [unlocksSection, prerequisitesSection].forEach(section => {
-                    section.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
-                    section.style.transform = 'translateX(0)';
-                    section.style.opacity = '1';
+                bodies.forEach(body => {
+                    body.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+                    body.style.transform = 'translateX(0)';
+                    body.style.opacity = '1';
                 });
             }
 
@@ -140,8 +152,8 @@
 
                 if (!closest) return;
 
-                const url = closest.href;
-                if (url === window.location.href) return;
+                const url = closest.dataset.url;
+                if (!url || url === window.location.href) return;
 
                 const direction = closestIndex > currentIndex ? 1 : -1;
 
@@ -177,7 +189,8 @@
                 </h2>`;
 
                 if (items.length === 0) {
-                    return header + `<p class="text-slate-400 text-sm text-center px-6 py-4">${emptyText}</p>`;
+                    return header +
+                        `<div class="section-body"><p class="section-body-empty text-slate-400 text-sm">${emptyText}</p></div>`;
                 }
 
                 const cards = items.map(item => `
@@ -193,7 +206,7 @@
                 </a>
             `).join('');
 
-                return header + `<div class="carousel-container">${cards}</div>`;
+                return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
 
             function escapeHtml(str) {

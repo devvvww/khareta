@@ -12,7 +12,7 @@
                 <div class="relative">
                     {{-- Tag-input style field: chips + text input live inside the same box --}}
                     <div id="search-input-wrapper"
-                        class="w-full flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 pe-16 focus-within:ring-2 focus-within:ring-[#0b7af1] cursor-text max-h-24 overflow-y-auto">
+                        class="w-full flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 pe-28 focus-within:ring-2 focus-within:ring-[#0b7af1] cursor-text max-h-24 overflow-y-auto">
                         <div id="chips-container" class="flex flex-wrap gap-1.5"></div>
                         <input type="text" id="search-input" placeholder="ابحث باسم المادة أو الرمز..."
                             class="flex-1 min-w-[100px] border-none outline-none focus:ring-0 text-sm py-1 bg-transparent"
@@ -70,23 +70,30 @@
         const status = document.getElementById('search-status');
         const chipsContainer = document.getElementById('chips-container');
         const clearAllBtn = document.getElementById('clear-all-btn');
-        const viewBar = document.getElementById('view-bar');
-        const viewSelectionBtn = document.getElementById('view-selection-btn');
         const selectionCountBadge = document.getElementById('selection-count-badge');
         const toggleAllBtn = document.getElementById('toggle-all-btn');
         const toggleAllIcon = document.getElementById('toggle-all-icon');
-        let showingAll = false;
+        const viewBar = document.getElementById('view-bar');
+        const viewSelectionBtn = document.getElementById('view-selection-btn');
 
         const selectedCourses = new Map();
         let debounceTimer;
+        let showingAll = false;
 
-        // Clicking anywhere in the wrapper (empty space, around chips) focuses the text input,
-        // just like a real tag-input component.
+        @foreach ($initialSelection ?? [] as $c)
+            selectedCourses.set({{ $c['id'] }}, {
+                name: @json($c['name']),
+                code: @json($c['code']),
+                color: @json($c['color']),
+            });
+        @endforeach
+
         inputWrapper.addEventListener('click', (e) => {
             if (e.target === inputWrapper || e.target === chipsContainer) {
                 input.focus();
             }
         });
+
         input.addEventListener('input', () => {
             clearTimeout(debounceTimer);
             const q = input.value.trim();
@@ -113,12 +120,28 @@
             if (input.value.trim()) searchMenu.classList.remove('hidden');
         });
 
-        // Backspace on an empty input removes the last chip — standard tag-input behavior.
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && input.value === '' && selectedCourses.size > 0) {
                 const lastId = [...selectedCourses.keys()].pop();
                 removeCourse(lastId);
             }
+        });
+
+        toggleAllBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (showingAll) {
+                searchMenu.classList.add('hidden');
+                showingAll = false;
+                toggleAllIcon.style.transform = 'rotate(0deg)';
+                return;
+            }
+
+            input.value = '';
+            searchMenu.classList.remove('hidden');
+            showingAll = true;
+            toggleAllIcon.style.transform = 'rotate(180deg)';
+            fetchAndRender('');
         });
 
         async function fetchAndRender(q) {
@@ -140,22 +163,22 @@
 
                 status.textContent = '';
                 results.innerHTML = courses.map(course => `
-            <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                <label class="shrink-0 cursor-pointer">
-                    <input type="checkbox" class="course-checkbox w-4 h-4 accent-[#0b7af1]"
-                           data-id="${course.id}"
-                           data-name="${escapeHtml(course.name)}"
-                           data-code="${escapeHtml(course.code || '')}"
-                           data-color="${course.color}"
-                           ${selectedCourses.has(course.id) ? 'checked' : ''}>
-                </label>
-                <a href="/courses/${course.id}" class="flex items-center gap-2 min-w-0 flex-1">
-                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
-                    <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
-                    ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
-                </a>
-            </div>
-        `).join('');
+                <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
+                    <label class="shrink-0 cursor-pointer">
+                        <input type="checkbox" class="course-checkbox w-4 h-4 accent-[#0b7af1]"
+                               data-id="${course.id}"
+                               data-name="${escapeHtml(course.name)}"
+                               data-code="${escapeHtml(course.code || '')}"
+                               data-color="${course.color}"
+                               ${selectedCourses.has(course.id) ? 'checked' : ''}>
+                    </label>
+                    <a href="/courses/${course.id}" class="flex items-center gap-2 min-w-0 flex-1">
+                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
+                        <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
+                        ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
+                    </a>
+                </div>
+            `).join('');
             } catch (e) {
                 status.textContent = 'حدث خطأ أثناء التحميل';
             }
@@ -184,7 +207,21 @@
 
             renderChips();
             updateViewBar();
-            // input.focus();
+        });
+
+        // If the user clicks a result row directly (intentionally, or by mistake
+        // while aiming for the checkbox), carry the current selection along so
+        // it isn't lost once they land on that course's show page.
+        results.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href^="/courses/"]');
+            if (!link) return;
+
+            const ids = [...selectedCourses.keys()];
+            if (ids.length === 0) return;
+
+            const url = new URL(link.href, window.location.origin);
+            url.searchParams.set('selected', ids.join(','));
+            link.href = url.toString();
         });
 
         clearAllBtn.addEventListener('click', () => {
@@ -192,6 +229,7 @@
             results.querySelectorAll('.course-checkbox').forEach(cb => cb.checked = false);
             renderChips();
             updateViewBar();
+            history.replaceState({}, '', window.location.pathname);
         });
 
         function removeCourse(id) {
@@ -202,17 +240,16 @@
 
             renderChips();
             updateViewBar();
-            // input.focus();
         }
 
         function renderChips() {
             chipsContainer.innerHTML = [...selectedCourses.entries()].map(([id, c]) => `
-        <span class="inline-flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] rounded-lg ps-2.5 pe-1.5 py-1 text-sm font-medium">
-            <span class="w-2 h-2 rounded-full shrink-0" style="background: ${c.color};"></span>
-            <span class="max-w-[110px] truncate">${c.name}</span>
-            <button type="button" class="remove-chip w-5 h-5 flex items-center justify-center rounded-full hover:bg-[#0b7af1]/20 text-base leading-none" data-id="${id}">×</button>
-        </span>
-    `).join('');
+            <span class="inline-flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] rounded-lg ps-2.5 pe-1.5 py-1 text-sm font-medium">
+                <span class="w-2 h-2 rounded-full shrink-0" style="background: ${c.color};"></span>
+                <span class="max-w-[110px] truncate">${c.name}</span>
+                <button type="button" class="remove-chip w-5 h-5 flex items-center justify-center rounded-full hover:bg-[#0b7af1]/20 text-base leading-none" data-id="${id}">×</button>
+            </span>
+        `).join('');
 
             selectionCountBadge.textContent = selectedCourses.size;
             clearAllBtn.classList.toggle('hidden', selectedCourses.size === 0);
@@ -241,23 +278,6 @@
             return div.innerHTML;
         }
 
-        toggleAllBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-
-            if (showingAll) {
-                searchMenu.classList.add('hidden');
-                showingAll = false;
-                toggleAllIcon.style.transform = 'rotate(0deg)';
-                return;
-            }
-
-            input.value = '';
-            searchMenu.classList.remove('hidden');
-            showingAll = true;
-            toggleAllIcon.style.transform = 'rotate(180deg)';
-            fetchAndRender('');
-        });
-
         function positionViewBar() {
             if (!window.visualViewport) return;
 
@@ -272,5 +292,8 @@
             window.visualViewport.addEventListener('scroll', positionViewBar);
             positionViewBar();
         }
+
+        renderChips();
+        updateViewBar();
     </script>
 @endpush

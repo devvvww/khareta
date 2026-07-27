@@ -289,3 +289,21 @@ body {
 #prerequisites-section {
     will-change: transform, opacity;
 }
+
+.section-body {
+    min-height: 132px;
+    display: flex;
+    align-items: center;
+}
+.section-body .carousel-container {
+    width: 100%;
+    align-items: center;
+}
+.section-body-empty {
+    width: 100%;
+    text-align: center;
+}
+
+.current-course-card {
+    max-width: 480px;
+}

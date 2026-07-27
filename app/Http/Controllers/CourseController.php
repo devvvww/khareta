@@ -39,6 +39,8 @@ class CourseController extends Controller
         $course->load(['prerequisites', 'requiredForCourses']);
 
         $idsParam = $request->query('ids');
+        $selectedParam = $request->query('selected', $idsParam);
+
         $selectedIds = $idsParam
             ? array_values(array_unique(array_filter(array_map('intval', explode(',', $idsParam)))))
             : [];
@@ -81,6 +83,7 @@ class CourseController extends Controller
             ]),
             'carousel' => $carousel,
             'idsParam' => $idsParam,
+            'selectedParam' => $selectedParam,
         ];
 
         if ($request->wantsJson()) {
@@ -89,7 +92,7 @@ class CourseController extends Controller
 
         return view('courses.show', $payload);
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      */
