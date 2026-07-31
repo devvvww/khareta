@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class CourseSearchController extends Controller
@@ -54,8 +55,9 @@ class CourseSearchController extends Controller
 
         return view('courses.search', [
             'initialSelection' => $initialSelection,
+            'currentDepartment' => Department::find(session('department_id')),
+            'departments' => Department::orderBy('name')->get(),
         ]);
-        
     }
 
     /**
