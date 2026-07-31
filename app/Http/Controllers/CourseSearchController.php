@@ -14,6 +14,7 @@ class CourseSearchController extends Controller
             $query = $request->input('q');
 
             $courses = Course::query()
+                ->where('department_id', session('department_id'))
                 ->when($query, function ($builder) use ($query) {
                     $normalized = $this->normalizeArabic($query);
 
