@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class CourseSearchController extends Controller
@@ -13,6 +14,7 @@ class CourseSearchController extends Controller
             $query = $request->input('q');
 
             $courses = Course::query()
+                ->where('department_id', session('department_id'))
                 ->when($query, function ($builder) use ($query) {
                     $normalized = $this->normalizeArabic($query);
 
@@ -54,8 +56,9 @@ class CourseSearchController extends Controller
 
         return view('courses.search', [
             'initialSelection' => $initialSelection,
+            'currentDepartment' => Department::find(session('department_id')),
+            'departments' => Department::orderBy('name')->get(),
         ]);
-        
     }
 
     /**

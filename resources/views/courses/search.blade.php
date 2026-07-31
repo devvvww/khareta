@@ -7,7 +7,37 @@
         <div class="course-flow-page flex flex-col min-h-screen md:min-h-0" style="overflow: visible;">
 
             <div class="pt-10 pb-6 px-6">
-                <h1 class="text-xl font-extrabold text-slate-800 mb-4">البحث عن المواد</h1>
+                <div class="flex items-center justify-between gap-2 mb-4">
+                    <h1 class="text-xl font-extrabold text-slate-800 whitespace-nowrap shrink-0">البحث عن المواد</h1>
+
+                    {{-- Department switcher --}}
+                    <div class="relative min-w-0">
+                        <button id="department-toggle" type="button"
+                            class="inline-flex items-center gap-1.5 max-w-[150px] bg-white border border-slate-200 rounded-full ps-3 pe-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm">
+                            <span class="truncate">{{ $currentDepartment?->name ?? 'اختر القسم' }}</span>
+                            <svg id="department-toggle-icon" xmlns="http://www.w3.org/2000/svg"
+                                class="w-3.5 h-3.5 text-slate-400 transition-transform shrink-0" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div id="department-menu"
+                            class="hidden absolute top-full mt-1 end-0 bg-white rounded-xl border border-slate-100 shadow-xl z-20 min-w-[200px] overflow-hidden">
+                            @foreach ($departments as $department)
+                                <form method="POST" action="{{ route('departments.store') }}">
+                                    @csrf
+                                    <input type="hidden" name="department_id" value="{{ $department->id }}">
+                                    <input type="hidden" name="redirect" value="{{ url()->current() }}">
+                                    <button type="submit"
+                                        class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-start hover:bg-slate-50 {{ $currentDepartment?->id === $department->id ? 'font-bold text-slate-800' : 'text-slate-600' }}">
+                                        {{ $department->name }}
+                                    </button>
+                                </form>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
 
                 <div class="relative">
                     {{-- Tag-input style field: chips + text input live inside the same box --}}
@@ -46,6 +76,7 @@
                         <div id="search-results" class="flex flex-col"></div>
                     </div>
                 </div>
+
             </div>
 
         </div>
@@ -75,6 +106,9 @@
         const toggleAllIcon = document.getElementById('toggle-all-icon');
         const viewBar = document.getElementById('view-bar');
         const viewSelectionBtn = document.getElementById('view-selection-btn');
+        const departmentToggle = document.getElementById('department-toggle');
+        const departmentMenu = document.getElementById('department-menu');
+        const departmentToggleIcon = document.getElementById('department-toggle-icon');
 
         const selectedCourses = new Map();
         let debounceTimer;
@@ -277,6 +311,28 @@
             div.textContent = str;
             return div.innerHTML;
         }
+
+        departmentToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            searchMenu.classList.add('hidden');
+            showingAll = false;
+            toggleAllIcon.style.transform = 'rotate(0deg)';
+            departmentMenu.classList.toggle('hidden');
+            departmentToggleIcon.style.transform = departmentMenu.classList.contains('hidden') ? 'rotate(0deg)' :
+                'rotate(180deg)';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchMenu.contains(e.target) && e.target !== input) {
+                searchMenu.classList.add('hidden');
+                showingAll = false;
+                toggleAllIcon.style.transform = 'rotate(0deg)';
+            }
+            if (!departmentMenu.contains(e.target) && e.target !== departmentToggle) {
+                departmentMenu.classList.add('hidden');
+                departmentToggleIcon.style.transform = 'rotate(0deg)';
+            }
+        });
 
         function positionViewBar() {
             if (!window.visualViewport) return;
