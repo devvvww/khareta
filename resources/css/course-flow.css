@@ -227,7 +227,7 @@ body {
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     gap: 8px;
-    padding: 10px 8%;
+    padding: 10px 12%;
     scrollbar-width: none;
 }
 
