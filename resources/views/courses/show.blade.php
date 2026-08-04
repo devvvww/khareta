@@ -19,7 +19,7 @@
         <div class="course-flow-page flex flex-col">
 
             {{-- Section 1: Unlocked courses (top) --}}
-            <div id="unlocks-section" class="pt-10 pb-4 bg-slate-50/50">
+            <div id="unlocks-section" class="pt-6 pb-3 md:pt-10 md:pb-4 bg-slate-50/50">
                 @include('courses.partials.course-section', [
                     'color' => 'slate-500',
                     'label' => 'مواد تتطلب هذه المادة :',
@@ -29,15 +29,15 @@
             </div>
 
             {{-- Section 2: Current course (middle) --}}
-            <div class="flex flex-col py-10 md:py-12">
-                <div class="flex justify-center mb-6">
-                    <span class="text-slate-400 text-3xl font-bold leading-none">↑</span>
+            <div class="flex flex-col py-4 md:py-12">
+                <div class="flex justify-center mb-3 md:mb-6">
+                    <span class="text-slate-400 text-2xl md:text-3xl font-bold leading-none">↑</span>
                 </div>
 
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-10 md:py-12"
+                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-6 md:py-12"
                                 style="background: {{ $item['color'] }};"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <span
@@ -66,13 +66,13 @@
                     </div>
                 @endif
 
-                <div class="flex justify-center mt-6">
-                    <span class="text-slate-400 text-3xl font-bold leading-none">↑</span>
+                <div class="flex justify-center mt-3 md:mt-6">
+                    <span class="text-slate-400 text-2xl md:text-3xl font-bold leading-none">↑</span>
                 </div>
             </div>
 
             {{-- Section 3: Prerequisites (bottom) --}}
-            <div id="prerequisites-section" class="pb-10 pt-4 bg-slate-50/50">
+            <div id="prerequisites-section" class="pb-6 pt-3 md:pb-10 md:pt-4 bg-slate-50/50">
                 @include('courses.partials.course-section', [
                     'color' => 'slate-500',
                     'label' => 'مواد مطلوبة لهذه المادة :',
