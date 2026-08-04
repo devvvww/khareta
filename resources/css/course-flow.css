@@ -246,7 +246,7 @@ body {
 
 .course-carousel-slide {
     flex: 0 0 100%;
-    max-width: 480px;
+    max-width: min(480px, 100%);
     scroll-snap-align: center;
     transition: transform 0.15s ease, opacity 0.15s ease;
     text-decoration: none;
@@ -295,10 +295,12 @@ body {
     display: flex;
     align-items: center;
 }
+
 .section-body .carousel-container {
     width: 100%;
     align-items: center;
 }
+
 .section-body-empty {
     width: 100%;
     text-align: center;
@@ -309,7 +311,9 @@ body {
 }
 
 .course-flow-page {
-    min-height: 100vh; /* fallback for browsers without dvh support */
+    min-height: 100vh;
+    /* fallback for browsers without dvh support */
+     padding-bottom: 1px;
 }
 
 @supports (min-height: 100dvh) {
