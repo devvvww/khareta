@@ -29,7 +29,7 @@
             </div>
 
             {{-- Section 2: Current course (middle) --}}
-            <div class="flex-1 flex flex-col justify-evenly min-h-0 py-2">
+            <div class="grow shrink-0 flex flex-col justify-evenly py-2">
                 <div class="flex justify-center">
                     <span class="text-slate-400 text-2xl font-bold leading-none">↑</span>
                 </div>
