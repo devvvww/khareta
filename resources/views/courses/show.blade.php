@@ -15,10 +15,8 @@
                 d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z" />
         </svg>
     </a>
-
-    <div class="flex flex-col items-center justify-center min-h-dvh p-0 md:p-6">
-
-        <div class="course-flow-page flex flex-col min-h-dvh md:min-h-0">
+    <div class="flex flex-col items-center p-0 md:p-6">
+        <div class="course-flow-page flex flex-col">
 
             {{-- Section 1: Unlocked courses (top) --}}
             <div id="unlocks-section" class="pt-10 pb-4 bg-slate-50/50">
@@ -31,9 +29,9 @@
             </div>
 
             {{-- Section 2: Current course (middle) --}}
-            <div class="flex-grow flex flex-col py-6 md:p-6 md:min-h-[420px]">
-                <div class="flex-1 flex items-center justify-center">
-                    <span class="text-slate-400 text-4xl font-bold leading-none">↑</span>
+            <div class="flex flex-col py-10 md:py-12">
+                <div class="flex justify-center mb-6">
+                    <span class="text-slate-400 text-3xl font-bold leading-none">↑</span>
                 </div>
 
                 @if ($carousel->count() > 1)
@@ -68,8 +66,8 @@
                     </div>
                 @endif
 
-                <div class="flex-1 flex items-center justify-center">
-                    <span class="text-slate-400 text-4xl font-bold leading-none">↑</span>
+                <div class="flex justify-center mt-6">
+                    <span class="text-slate-400 text-3xl font-bold leading-none">↑</span>
                 </div>
             </div>
 
