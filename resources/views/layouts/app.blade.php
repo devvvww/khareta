@@ -30,6 +30,7 @@
             const tg = window.Telegram.WebApp;
             tg.ready();
             tg.expand();
+            tg.disableVerticalSwipes();
 
             const isRootPage = document.body.dataset.tgRoot === 'true';
             const fallbackUrl = document.body.dataset.tgFallback || '/';

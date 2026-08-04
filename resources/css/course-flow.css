@@ -162,16 +162,6 @@ body {
 
 /* ---- Wide-screen page frame (used instead of the phone mockup on
    web / tablet widths) ---- */
-.course-flow-page {
-    width: 100%;
-    max-width: 640px;
-    background: white;
-    border-radius: 0;
-    position: relative;
-    overflow: hidden;
-    box-shadow: none;
-    border: none;
-}
 
 @media (min-width: 768px) {
     .course-flow-page {
@@ -311,9 +301,19 @@ body {
 }
 
 .course-flow-page {
-    min-height: 100vh;
-    /* fallback for browsers without dvh support */
-     padding-bottom: 1px;
+    width: 100%;
+    max-width: 640px;
+    min-height: 100vh; /* fallback for browsers without dvh support */
+    background: white;
+    border-radius: 0;
+    position: relative;
+    overflow-x: hidden;
+    box-shadow: none;
+    border: none;
+    padding-bottom: 1px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 @supports (min-height: 100dvh) {
