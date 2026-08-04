@@ -63,12 +63,14 @@ class CourseController extends Controller
         ];
 
         if ($request->wantsJson()) {
-            return response()->json($payload);
+            return response()->json($payload)
+                ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+                ->header('Vary', 'Accept');
         }
 
         return view('courses.show', $payload);
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      */
