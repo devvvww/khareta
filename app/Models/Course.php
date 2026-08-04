@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Course extends Model
 {
+    protected $fillable = ['code','color','name','is_elective','description','department_prefix_id','department_id'];
     public function prerequisites() : BelongsToMany {
         return $this->belongsToMany(Course::class, 'course_prerequisite', 'course_id', 'prerequisite_id');
     }
@@ -16,5 +17,9 @@ class Course extends Model
     }
     public function department() : BelongsTo {
         return $this->belongsTo(Department::class);
+    }
+
+    public function departmentPrefix() : BelongsTo {
+        return $this->belongsTo(DepartmentPrefix::class);
     }
 }
