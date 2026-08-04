@@ -16,10 +16,10 @@
         </svg>
     </a>
     <div class="flex flex-col items-center p-0 md:p-6">
-        <div class="course-flow-page flex flex-col">
+        <div class="course-flow-page flex flex-col h-dvh overflow-y-auto md:h-auto">
 
             {{-- Section 1: Unlocked courses (top) --}}
-            <div id="unlocks-section" class="pt-[clamp(1rem,4dvh,2.5rem)] pb-[clamp(0.75rem,2dvh,1rem)] bg-slate-50/50">
+            <div id="unlocks-section" class="pt-6 pb-3 bg-slate-50/50 shrink-0">
                 @include('courses.partials.course-section', [
                     'color' => 'slate-500',
                     'label' => 'مواد تتطلب هذه المادة :',
@@ -29,15 +29,15 @@
             </div>
 
             {{-- Section 2: Current course (middle) --}}
-            <div class="flex flex-col py-[clamp(0.75rem,3dvh,3rem)]">
-                <div class="flex justify-center mb-[clamp(0.5rem,1.5dvh,1.5rem)]">
-                    <span class="text-slate-400 text-[clamp(1.25rem,4dvh,1.875rem)] font-bold leading-none">↑</span>
+            <div class="flex-1 flex flex-col justify-evenly min-h-0 py-2">
+                <div class="flex justify-center">
+                    <span class="text-slate-400 text-2xl font-bold leading-none">↑</span>
                 </div>
 
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-[clamp(1rem,4dvh,3rem)]"
+                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-6 md:py-12"
                                 style="background: {{ $item['color'] }};"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <span
@@ -53,7 +53,7 @@
                     </div>
                 @else
                     <div class="px-[10%] flex justify-center">
-                        <div class="current-course-card w-full px-6 py-[clamp(1rem,4dvh,3rem)] rounded-3xl text-white shadow-2xl text-center"
+                        <div class="current-course-card w-full px-6 py-6 md:py-12 rounded-3xl text-white shadow-2xl text-center"
                             style="background: {{ $course['color'] ?? '#0b7af1' }};">
                             <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
                                 المختارة</span>
@@ -66,14 +66,13 @@
                     </div>
                 @endif
 
-                <div class="flex justify-center mt-[clamp(0.5rem,1.5dvh,1.5rem)]">
-                    <span class="text-slate-400 text-[clamp(1.25rem,4dvh,1.875rem)] font-bold leading-none">↑</span>
+                <div class="flex justify-center">
+                    <span class="text-slate-400 text-2xl font-bold leading-none">↑</span>
                 </div>
             </div>
-            
+
             {{-- Section 3: Prerequisites (bottom) --}}
-            <div id="prerequisites-section"
-                class="pb-[clamp(1rem,4dvh,2.5rem)] pt-[clamp(0.75rem,2dvh,1rem)] bg-slate-50/50">
+            <div id="prerequisites-section" class="pb-6 pt-3 bg-slate-50/50 shrink-0">
                 @include('courses.partials.course-section', [
                     'color' => 'slate-500',
                     'label' => 'مواد مطلوبة لهذه المادة :',
