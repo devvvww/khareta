@@ -7,7 +7,7 @@ export default defineConfig({
         host: '0.0.0.0',   // listen on all network interfaces, not just localhost
         cors: true,
         hmr: {
-            host: '192.168.0.106', // dev machine's LAN IP
+            host: '192.168.0.110', // dev machine's LAN IP
         },
     },
     plugins: [
