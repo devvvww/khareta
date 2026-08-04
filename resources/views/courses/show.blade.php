@@ -2,6 +2,8 @@
 
 @section('title', $course['title'] . ' — مسار المواد الدراسية')
 
+@section('tg-fallback', route('courses.search'))
+
 @section('content')
 
     <a href="{{ route('courses.search') }}{{ $selectedParam ? '?ids=' . $selectedParam : '' }}"
@@ -14,9 +16,9 @@
         </svg>
     </a>
 
-    <div class="flex flex-col items-center justify-center min-h-screen p-0 md:p-6">
+    <div class="flex flex-col items-center justify-center min-h-dvh p-0 md:p-6">
 
-        <div class="course-flow-page flex flex-col min-h-screen md:min-h-0">
+        <div class="course-flow-page flex flex-col min-h-dvh md:min-h-0">
 
             {{-- Section 1: Unlocked courses (top) --}}
             <div id="unlocks-section" class="pt-10 pb-4 bg-slate-50/50">
