@@ -307,3 +307,13 @@ body {
 .current-course-card {
     max-width: 480px;
 }
+
+.course-flow-page {
+    min-height: 100vh; /* fallback for browsers without dvh support */
+}
+
+@supports (min-height: 100dvh) {
+    .course-flow-page {
+        min-height: 100dvh;
+    }
+}

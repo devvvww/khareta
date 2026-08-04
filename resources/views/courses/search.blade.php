@@ -2,6 +2,8 @@
 
 @section('title', 'البحث عن المواد — مسار المواد الدراسية')
 
+@section('tg-root', 'true')
+
 @section('content')
     <div class="flex flex-col items-center min-h-screen p-0 md:p-6">
         <div class="course-flow-page flex flex-col min-h-screen md:min-h-0" style="overflow: visible;">

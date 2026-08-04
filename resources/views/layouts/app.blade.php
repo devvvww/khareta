@@ -14,13 +14,41 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen"
+      data-tg-root="@yield('tg-root', 'false')"
+      data-tg-fallback="@yield('tg-fallback', '/')">
 
     @yield('content')
 
     @stack('scripts')
+
+    <script>
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+
+            const isRootPage = document.body.dataset.tgRoot === 'true';
+            const fallbackUrl = document.body.dataset.tgFallback || '/';
+
+            if (isRootPage) {
+                tg.BackButton.hide();
+            } else {
+                tg.BackButton.show();
+            }
+
+            tg.BackButton.onClick(() => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = fallbackUrl;
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
