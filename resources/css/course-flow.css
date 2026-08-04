@@ -236,7 +236,7 @@ body {
 
 .course-carousel-slide {
     flex: 0 0 100%;
-    max-width: min(400px, 100%);
+    max-width: min(350px, 100%);
     scroll-snap-align: center;
     transition: transform 0.15s ease, opacity 0.15s ease;
     text-decoration: none;
