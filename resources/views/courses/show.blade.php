@@ -97,6 +97,7 @@
             const prerequisitesSection = document.getElementById('prerequisites-section');
             let scrollEndTimer;
             let currentIndex = 0;
+            let ticking = false;
 
             function updateCarouselState() {
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;
@@ -218,7 +219,14 @@
             }
 
             carousel.addEventListener('scroll', () => {
-                updateCarouselState();
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        updateCarouselState();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+
                 clearTimeout(scrollEndTimer);
                 scrollEndTimer = setTimeout(loadClosestSlide, 180);
             });
