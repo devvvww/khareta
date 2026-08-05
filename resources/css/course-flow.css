@@ -325,7 +325,7 @@ body::-webkit-scrollbar {
     border: none;
     padding-bottom: 1px;
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; */
     touch-action: pan-y;
     scrollbar-width: none;
 }
