@@ -100,7 +100,7 @@ body::-webkit-scrollbar {
     overflow-x: auto;
     /* scroll-snap-type: x proximity; */
     scroll-behavior: auto;
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; */
     gap: 12px;
     padding: 10px 20px;
     scrollbar-width: none;
