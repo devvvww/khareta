@@ -17,10 +17,8 @@
     </a>
     {{-- <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0 md:pt-[clamp(0rem,calc((100vw-48rem)*0.094),1.5rem)]">
          --}}
-    {{-- <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0"> --}}
-    <div class="flex flex-col items-center px-4 md:px-6 py-4 md:py-6">
-        {{-- <div class="course-flow-page flex flex-col h-dvh overflow-y-auto md:h-auto"> --}}
-        <div class="course-flow-page flex flex-col min-h-dvh md:min-h-0 md:h-auto overflow-y-auto">
+    <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0">
+        <div class="course-flow-page flex flex-col h-dvh overflow-y-auto md:h-auto">
 
             {{-- Section 1: Unlocked courses (top) --}}
             <div id="unlocks-section" class="pt-6 pb-3 bg-slate-50/50 shrink-0">
