@@ -38,6 +38,15 @@ body {
     background-color: #f8fafc;
 }
 
+html, body {
+    scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Telegram's webviews */
+}
+
 /* ---- Card header gradients (unchanged from the demo) ---- */
 /* ---- Card: filled entirely with the course color, no white area.
    min-height matches the old header (60px) + description block (32px)
