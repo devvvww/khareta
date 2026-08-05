@@ -223,7 +223,7 @@ body {
 
 .course-carousel {
     display: flex;
-    direction: rtl;
+    /* direction: rtl; */
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
