@@ -230,7 +230,7 @@ body::-webkit-scrollbar {
     }
 }
 
-.course-carousel {
+.course-carousel, .current-course {
     display: flex;
     direction: rtl;
     overflow-x: auto;

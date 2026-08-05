@@ -54,8 +54,8 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="px-[10%] flex justify-center">
-                        <div class="current-course-card w-full px-6 py-6 md:py-12 rounded-3xl text-white shadow-2xl text-center px-6 py-6 md:py-6"
+                    <div class="px-[10%] flex justify-center current-course">
+                        <div class="current-course-card w-full rounded-3xl text-white text-center px-6 py-6 md:py-6"
                             style="background: {{ $course['color'] ?? '#0b7af1' }};">
                             <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
                                 المختارة</span>
