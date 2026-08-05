@@ -26,7 +26,7 @@ class CourseManageController extends Controller
 
     public function create(Department $department)
     {
-        $allCourses = Course::where('department_id', $department->id)->orderBy('name')->get();
+        $allCourses = $this->prerequisiteCandidates($department);
 
         return view('admin.courses.form', [
             'department' => $department,
@@ -58,16 +58,13 @@ class CourseManageController extends Controller
     public function edit(Course $course)
     {
         $department = $course->department;
-        $allCourses = Course::where('department_id', $department->id)->where('id', '!=', $course->id)->orderBy('name')->get();
+        $allCourses = $this->prerequisiteCandidates($department, excludeCourseId: $course->id);
         $selectedPrerequisiteIds = $course->prerequisites->pluck('id')->toArray();
 
         $codeNumber = $course->departmentPrefix
             ? substr($course->code, strlen($course->departmentPrefix->prefix))
             : $course->code;
 
-        // Any course that already lists THIS course as one of its own
-        // prerequisites can't also become a prerequisite of this course —
-        // that would create a cycle (A needs B, B needs A).
         $disabledPrerequisiteIds = $course->requiredForCourses->pluck('id')->toArray();
 
         return view('admin.courses.form', compact('department', 'course', 'allCourses', 'selectedPrerequisiteIds', 'codeNumber', 'disabledPrerequisiteIds'));
@@ -98,5 +95,22 @@ class CourseManageController extends Controller
         return redirect()
             ->route('admin.departments.courses.index', $departmentId)
             ->with('status', 'تم حذف المادة');
+    }
+
+    private function prerequisiteCandidates(Department $department, ?int $excludeCourseId = null)
+    {
+        $departmentIds = [$department->id];
+
+        if (!$department->is_general) {
+            $generalDepartment = Department::where('is_general', true)->first();
+            if ($generalDepartment) {
+                $departmentIds[] = $generalDepartment->id;
+            }
+        }
+
+        return Course::whereIn('department_id', $departmentIds)
+            ->when($excludeCourseId, fn($q) => $q->where('id', '!=', $excludeCourseId))
+            ->orderBy('name')
+            ->get();
     }
 }
