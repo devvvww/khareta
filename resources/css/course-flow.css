@@ -32,9 +32,6 @@
     font-display: swap;
 }
 
-html {
-    scrollbar-gutter: stable;
-}
 
 body {
     font-family: 'Almarai', 'Segoe UI', Tahoma, Arial, sans-serif;
