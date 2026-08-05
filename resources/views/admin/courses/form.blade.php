@@ -91,36 +91,63 @@
             </label>
 
             <label class="block text-sm font-bold text-slate-700 mb-2 mt-6">المتطلبات السابقة</label>
-            <div class="border border-slate-200 rounded-xl max-h-56 overflow-y-auto">
-                @php
-                    $sortedCourses = $allCourses
-                        ->sortByDesc(fn($c) => in_array($c->id, $selectedPrerequisiteIds))
-                        ->values();
-                @endphp
 
-                @foreach ($sortedCourses as $c)
-                    @php $isSelected = in_array($c->id, $selectedPrerequisiteIds); @endphp
-                    <label
-                        class="prerequisite-row flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 text-sm cursor-pointer transition-colors {{ $isSelected ? 'bg-[#0b7af1]/10' : 'hover:bg-slate-50' }}">
-                        <span class="relative w-5 h-5 shrink-0">
-                            <input type="checkbox" name="prerequisites[]" value="{{ $c->id }}"
-                                class="prerequisite-checkbox absolute inset-0 opacity-0 cursor-pointer"
-                                {{ $isSelected ? 'checked' : '' }}>
-                            <span
-                                class="check-indicator w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors {{ $isSelected ? 'bg-[#0b7af1] border-[#0b7af1]' : 'border-slate-300' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="w-3 h-3 text-white {{ $isSelected ? '' : 'hidden' }}" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
+            <div
+                class="border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#0b7af1] focus-within:border-transparent">
+                <div class="relative border-b border-slate-100">
+                    <input type="text" id="prerequisite-search" placeholder="ابحث عن مادة..."
+                        class="w-full px-4 py-2.5 pe-9 text-sm outline-none">
+                    <button type="button" id="prerequisite-search-clear"
+                        class="hidden absolute top-1/2 -translate-y-1/2 end-2 w-6 h-6 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="prerequisite-list" class="max-h-56 overflow-y-auto">
+                    @php
+                        $sortedCourses = $allCourses
+                            ->sortByDesc(fn($c) => in_array($c->id, $selectedPrerequisiteIds))
+                            ->values();
+                    @endphp
+
+                    @foreach ($sortedCourses as $c)
+                        @php
+                            $isSelected = in_array($c->id, $selectedPrerequisiteIds);
+                            $isDisabled = in_array($c->id, $disabledPrerequisiteIds);
+                        @endphp
+                        <label
+                            class="prerequisite-row flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 text-sm transition-colors
+                {{ $isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer' }}
+                {{ $isSelected ? 'bg-[#0b7af1]/10' : ($isDisabled ? '' : 'hover:bg-slate-50') }}"
+                            data-name="{{ mb_strtolower($c->name) }}" data-code="{{ mb_strtolower($c->code) }}">
+                            <span class="relative w-5 h-5 shrink-0">
+                                <input type="checkbox" name="prerequisites[]" value="{{ $c->id }}"
+                                    class="prerequisite-checkbox absolute inset-0 opacity-0 {{ $isDisabled ? 'cursor-not-allowed' : 'cursor-pointer' }}"
+                                    {{ $isSelected ? 'checked' : '' }} {{ $isDisabled ? 'disabled' : '' }}>
+                                <span
+                                    class="check-indicator w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors {{ $isSelected ? 'bg-[#0b7af1] border-[#0b7af1]' : 'border-slate-300' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-3 h-3 text-white {{ $isSelected ? '' : 'hidden' }}" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </span>
                             </span>
-                        </span>
 
-                        <span
-                            class="font-medium {{ $isSelected ? 'text-slate-800' : 'text-slate-600' }}">{{ $c->name }}</span>
-                        <span class="text-xs text-slate-400 font-mono" dir="ltr">{{ $c->code }}</span>
-                    </label>
-                @endforeach
+                            <span
+                                class="font-medium {{ $isSelected ? 'text-slate-800' : 'text-slate-600' }}">{{ $c->name }}</span>
+                            <span class="text-xs text-slate-400 font-mono" dir="ltr">{{ $c->code }}</span>
+                            @if ($isDisabled)
+                                <span class="text-xs text-slate-400 ms-auto">(لا يمكن اختيارها لأنها تتطلب هذه المادة بالفعل)</span>
+                            @endif
+                        </label>
+                    @endforeach
+
+                    <p id="prerequisite-empty" class="hidden text-slate-400 text-sm text-center py-4">لا توجد نتائج</p>
+                </div>
             </div>
 
             <button type="submit" class="w-full bg-[#0b7af1] text-white font-bold py-3 rounded-xl mt-6 cursor-pointer">
@@ -138,6 +165,34 @@
             const nameSpan = row.querySelector('span.font-medium');
 
             const codeNumberInput = document.getElementById('code-number-input');
+
+            const prerequisiteSearch = document.getElementById('prerequisite-search');
+            const prerequisiteList = document.getElementById('prerequisite-list');
+            const prerequisiteEmpty = document.getElementById('prerequisite-empty');
+            const prerequisiteRows = [...prerequisiteList.querySelectorAll('.prerequisite-row')];
+
+            const prerequisiteClearBtn = document.getElementById('prerequisite-search-clear');
+
+            prerequisiteSearch.addEventListener('input', () => {
+                const q = prerequisiteSearch.value.trim().toLowerCase();
+                let visibleCount = 0;
+
+                prerequisiteRows.forEach(row => {
+                    const matches = row.dataset.name.includes(q) || row.dataset.code.includes(q);
+                    row.classList.toggle('row-collapsed', !matches);
+                    if (matches) visibleCount++;
+                });
+
+                prerequisiteEmpty.classList.toggle('hidden', visibleCount > 0);
+                prerequisiteClearBtn.classList.toggle('hidden', q === '');
+                prerequisiteClearBtn.classList.toggle('flex', q !== '');
+            });
+
+            prerequisiteClearBtn.addEventListener('click', () => {
+                prerequisiteSearch.value = '';
+                prerequisiteSearch.dispatchEvent(new Event('input'));
+                prerequisiteSearch.focus();
+            });
 
             codeNumberInput.addEventListener('input', () => {
                 codeNumberInput.value = codeNumberInput.value.replace(/\D/g, '').slice(0, 3);
