@@ -39,17 +39,19 @@
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-6 md:py-6"
-                                style="background: {{ $item['color'] }};"
+                            <div class="course-carousel-slide"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
-                                <span
-                                    class="slide-label block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
-                                    المختارة</span>
-                                <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $item['title'] }}</h1>
-                                @if (!empty($item['code']))
-                                    <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2"
-                                        dir="ltr">{{ $item['code'] }}</span>
-                                @endif
+                                <div class="course-carousel-slide-inner current-course-card rounded-3xl text-white text-center px-6 py-6 md:py-6"
+                                    style="background: {{ $item['color'] }};">
+                                    <span
+                                        class="slide-label block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
+                                        المختارة</span>
+                                    <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $item['title'] }}</h1>
+                                    @if (!empty($item['code']))
+                                        <span class="block text-center text-xs font-mono tracking-widest opacity-75 mt-2"
+                                            dir="ltr">{{ $item['code'] }}</span>
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -103,17 +105,19 @@
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;
 
                 slides.forEach(slide => {
+                    const inner = slide.querySelector('.course-carousel-slide-inner');
                     const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
                     const distance = Math.abs(center - slideCenter);
                     const ratio = Math.max(0, 1 - distance / carousel.offsetWidth);
 
-                    slide.style.transform = `scaleX(${0.85 + ratio * 0.15})`;
-                    slide.style.opacity = 0.4 + ratio * 0.6;
+                    inner.style.transform = `scaleX(${0.85 + ratio * 0.15})`;
+                    inner.style.opacity = 0.4 + ratio * 0.6;
 
-                    const label = slide.querySelector('.slide-label');
+                    const label = inner.querySelector('.slide-label');
                     label.style.opacity = ratio > 0.9 ? '0.8' : '0';
                 });
             }
+
 
             function slideSectionsIn(direction) {
                 const offset = direction * 24;
