@@ -91,7 +91,7 @@ body {
     overflow-x: auto;
     /* scroll-snap-type: x proximity; */
     scroll-behavior: auto;
-    /* -webkit-overflow-scrolling: touch; */
+    -webkit-overflow-scrolling: touch;
     gap: 12px;
     padding: 10px 20px;
     scrollbar-width: none;
@@ -232,7 +232,9 @@ body {
     scrollbar-width: none;
 }
 
-.course-carousel::-webkit-scrollbar { display: none; }
+.course-flow-page::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Telegram's Chromium-based webviews */
+}
 
 .course-carousel-slide {
     flex: 0 0 100%;
@@ -316,6 +318,11 @@ body {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    scrollbar-width: none;
+}
+
+.course-flow-page::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Telegram's Chromium-based webviews */
 }
 
 @supports (min-height: 100dvh) {
