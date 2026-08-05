@@ -39,7 +39,7 @@
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 md:py-10"
+                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-6 md:py-0"
                                 style="background: {{ $item['color'] }};"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <span
