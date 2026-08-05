@@ -34,6 +34,7 @@ class CourseManageController extends Controller
             'allCourses' => $allCourses,
             'selectedPrerequisiteIds' => [],
             'codeNumber' => '',
+            'disabledPrerequisiteIds' => [],
         ]);
     }
 
@@ -64,7 +65,12 @@ class CourseManageController extends Controller
             ? substr($course->code, strlen($course->departmentPrefix->prefix))
             : $course->code;
 
-        return view('admin.courses.form', compact('department', 'course', 'allCourses', 'selectedPrerequisiteIds', 'codeNumber'));
+        // Any course that already lists THIS course as one of its own
+        // prerequisites can't also become a prerequisite of this course —
+        // that would create a cycle (A needs B, B needs A).
+        $disabledPrerequisiteIds = $course->requiredForCourses->pluck('id')->toArray();
+
+        return view('admin.courses.form', compact('department', 'course', 'allCourses', 'selectedPrerequisiteIds', 'codeNumber', 'disabledPrerequisiteIds'));
     }
 
     public function update(UpdateCourseManageRequest $request, Course $course)

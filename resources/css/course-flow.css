@@ -339,3 +339,17 @@ body::-webkit-scrollbar {
         min-height: 100dvh;
     }
 }
+
+.prerequisite-row {
+    transition: max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
+    overflow: hidden;
+    max-height: 100px;
+}
+
+.prerequisite-row.row-collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-color: transparent;
+}
