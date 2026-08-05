@@ -164,13 +164,13 @@ body {
 /* ---- Wide-screen page frame (used instead of the phone mockup on
    web / tablet widths) ---- */
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
     .course-flow-page {
         border-radius: 24px;
         box-shadow: 0 20px 60px -20px rgba(15, 23, 42, 0.25);
         border: 1px solid #f1f5f9;
     }
-}
+} */
 
 @media (min-width: 1024px) {
     .course-flow-page {
@@ -223,7 +223,7 @@ body {
 
 .course-carousel {
     display: flex;
-    /* direction: rtl; */
+    direction: rtl;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
