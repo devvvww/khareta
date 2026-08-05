@@ -106,7 +106,7 @@
                     const distance = Math.abs(center - slideCenter);
                     const ratio = Math.max(0, 1 - distance / carousel.offsetWidth);
 
-                    slide.style.transform = `scale(${0.85 + ratio * 0.15})`;
+                    slide.style.transform = `scaleX(${0.85 + ratio * 0.15})`;
                     slide.style.opacity = 0.4 + ratio * 0.6;
 
                     const label = slide.querySelector('.slide-label');
