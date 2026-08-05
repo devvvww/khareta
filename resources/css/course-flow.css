@@ -252,7 +252,7 @@ body::-webkit-scrollbar {
     /* scroll-snap-stop: always; */
     scroll-margin-inline: 0;
     text-decoration: none;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition: opacity 0.15s ease;
 }
 
 .slide-label {
