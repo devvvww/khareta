@@ -15,7 +15,7 @@
                 d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z" />
         </svg>
     </a>
-    <div class="flex flex-col items-center p-[clamp(0px,3vw,1.5rem)]">
+    <div class="flex flex-col items-center p-0 md:p-6">
         <div class="course-flow-page flex flex-col h-dvh overflow-y-auto md:h-auto">
 
             {{-- Section 1: Unlocked courses (top) --}}

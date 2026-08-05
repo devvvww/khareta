@@ -5,7 +5,7 @@
 @section('tg-root', 'true')
 
 @section('content')
-    <div class="flex flex-col items-center min-h-screen p-[clamp(0px,3vw,1.5rem)]">
+    <div class="flex flex-col items-center min-h-screen p-0 md:p-6">
         <div class="course-flow-page flex flex-col min-h-screen md:min-h-0" style="overflow: visible;">
 
             <div class="pt-10 pb-6 px-6">
