@@ -15,11 +15,13 @@
                 d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z" />
         </svg>
     </a>
-    <div class="flex flex-col items-center p-0 md:p-6">
-        <div class="course-flow-page flex flex-col">
+    {{-- <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0 md:pt-[clamp(0rem,calc((100vw-48rem)*0.094),1.5rem)]">
+         --}}
+    <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0">
+        <div class="course-flow-page flex flex-col h-dvh overflow-y-auto md:h-auto">
 
             {{-- Section 1: Unlocked courses (top) --}}
-            <div id="unlocks-section" class="pt-6 pb-3 md:pt-10 md:pb-4 bg-slate-50/50">
+            <div id="unlocks-section" class="pt-6 pb-3 bg-slate-50/50 shrink-0">
                 @include('courses.partials.course-section', [
                     'color' => 'slate-500',
                     'label' => 'مواد تتطلب هذه المادة :',
@@ -29,15 +31,15 @@
             </div>
 
             {{-- Section 2: Current course (middle) --}}
-            <div class="flex flex-col py-4 md:py-12">
-                <div class="flex justify-center mb-3 md:mb-6">
-                    <span class="text-slate-400 text-2xl md:text-3xl font-bold leading-none">↑</span>
+            <div class="grow shrink-0 flex flex-col justify-evenly py-2">
+                <div class="flex justify-center">
+                    <span class="text-slate-400 text-2xl font-bold leading-none">↑</span>
                 </div>
 
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-6 md:py-12"
+                            <div class="course-carousel-slide current-course-card block rounded-3xl text-white text-center px-6 py-6 md:py-6"
                                 style="background: {{ $item['color'] }};"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <span
@@ -53,7 +55,7 @@
                     </div>
                 @else
                     <div class="px-[10%] flex justify-center">
-                        <div class="current-course-card w-full px-6 py-10 md:py-12 rounded-3xl text-white shadow-2xl text-center"
+                        <div class="current-course-card w-full px-6 py-6 md:py-12 rounded-3xl text-white shadow-2xl text-center"
                             style="background: {{ $course['color'] ?? '#0b7af1' }};">
                             <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
                                 المختارة</span>
@@ -66,13 +68,13 @@
                     </div>
                 @endif
 
-                <div class="flex justify-center mt-3 md:mt-6">
-                    <span class="text-slate-400 text-2xl md:text-3xl font-bold leading-none">↑</span>
+                <div class="flex justify-center">
+                    <span class="text-slate-400 text-2xl font-bold leading-none">↑</span>
                 </div>
             </div>
 
             {{-- Section 3: Prerequisites (bottom) --}}
-            <div id="prerequisites-section" class="pb-6 pt-3 md:pb-10 md:pt-4 bg-slate-50/50">
+            <div id="prerequisites-section" class="pb-6 pt-3 bg-slate-50/50 shrink-0">
                 @include('courses.partials.course-section', [
                     'color' => 'slate-500',
                     'label' => 'مواد مطلوبة لهذه المادة :',
@@ -104,7 +106,7 @@
                     const distance = Math.abs(center - slideCenter);
                     const ratio = Math.max(0, 1 - distance / carousel.offsetWidth);
 
-                    slide.style.transform = `scale(${0.85 + ratio * 0.15})`;
+                    slide.style.transform = `scaleX(${0.85 + ratio * 0.15})`;
                     slide.style.opacity = 0.4 + ratio * 0.6;
 
                     const label = slide.querySelector('.slide-label');

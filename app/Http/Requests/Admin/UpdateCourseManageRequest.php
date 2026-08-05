@@ -37,6 +37,15 @@ class UpdateCourseManageRequest extends FormRequest
             'is_elective' => 'nullable|boolean',
             'prerequisites' => 'nullable|array',
             'prerequisites.*' => Rule::exists('courses', 'id')->where('department_id', $departmentId),
+            'prerequisites.*' => [
+                Rule::exists('courses', 'id')->where('department_id', $departmentId),
+                function ($attribute, $value, $fail) {
+                    $course = $this->route('course'); // omit this line + check entirely in Store request (new course can't have this problem yet)
+                    if ($course && $course->requiredForCourses()->where('courses.id', $value)->exists()) {
+                        $fail('اختيار غير صالح — سيؤدي هذا إلى تبعية دائرية.');
+                    }
+                },
+            ],
         ];
     }
 

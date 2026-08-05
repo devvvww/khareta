@@ -5,7 +5,8 @@
 @section('tg-root', 'true')
 
 @section('content')
-    <div class="flex flex-col items-center min-h-screen p-0 md:p-6">
+    {{-- <div class="flex flex-col items-center min-h-screen px-0 md:px-6 pb-0 md:pb-6 pt-0 md:pt-[clamp(0rem,calc((100vw-48rem)*0.094),1.5rem)]"> --}}
+    <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0">
         <div class="course-flow-page flex flex-col min-h-screen md:min-h-0" style="overflow: visible;">
 
             <div class="pt-10 pb-6 px-6">
@@ -62,7 +63,7 @@
                         </button>
 
                         <button id="toggle-all-btn" type="button" title="عرض كل المواد"
-                            class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700">
+                            class="w-8 h-8 flex items-center justify-center rounded-full bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                             <svg id="toggle-all-icon" xmlns="http://www.w3.org/2000/svg"
                                 class="w-4 h-4 transition-transform" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">

@@ -32,9 +32,19 @@
     font-display: swap;
 }
 
+
 body {
     font-family: 'Almarai', 'Segoe UI', Tahoma, Arial, sans-serif;
     background-color: #f8fafc;
+}
+
+html, body {
+    scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Telegram's webviews */
 }
 
 /* ---- Card header gradients (unchanged from the demo) ---- */
@@ -90,7 +100,7 @@ body {
     overflow-x: auto;
     /* scroll-snap-type: x proximity; */
     scroll-behavior: auto;
-    /* -webkit-overflow-scrolling: touch; */
+    -webkit-overflow-scrolling: touch;
     gap: 12px;
     padding: 10px 20px;
     scrollbar-width: none;
@@ -120,7 +130,7 @@ body {
 
 /* Desktop / tablet (md and up): let cards wrap into a grid instead of
    forcing a horizontal scroll — better use of the extra width. */
-
+/* 
 @media (min-width: 768px) {
     .carousel-container {
         flex-wrap: wrap;
@@ -132,7 +142,7 @@ body {
     .carousel-container a {
         flex: 0 1 240px;
     }
-}
+} */
 
 /* @media (min-width: 768px) {
     .carousel-container {
@@ -162,24 +172,14 @@ body {
 
 /* ---- Wide-screen page frame (used instead of the phone mockup on
    web / tablet widths) ---- */
-.course-flow-page {
-    width: 100%;
-    max-width: 640px;
-    background: white;
-    border-radius: 0;
-    position: relative;
-    overflow: hidden;
-    box-shadow: none;
-    border: none;
-}
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
     .course-flow-page {
         border-radius: 24px;
         box-shadow: 0 20px 60px -20px rgba(15, 23, 42, 0.25);
         border: 1px solid #f1f5f9;
     }
-}
+} */
 
 @media (min-width: 1024px) {
     .course-flow-page {
@@ -232,24 +232,27 @@ body {
 
 .course-carousel {
     display: flex;
+    direction: rtl;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     gap: 8px;
-    padding: 10px 10%;
+    padding: 10px 12%;
     scrollbar-width: none;
 }
 
-.course-carousel::-webkit-scrollbar {
-    display: none;
+.course-flow-page::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Telegram's Chromium-based webviews */
 }
 
 .course-carousel-slide {
     flex: 0 0 100%;
-    max-width: 480px;
+    max-width: min(480px, 100%);
     scroll-snap-align: center;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    /* scroll-snap-stop: always; */
+    scroll-margin-inline: 0;
     text-decoration: none;
+    transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .slide-label {
@@ -295,10 +298,12 @@ body {
     display: flex;
     align-items: center;
 }
+
 .section-body .carousel-container {
     width: 100%;
     align-items: center;
 }
+
 .section-body-empty {
     width: 100%;
     text-align: center;
@@ -309,11 +314,42 @@ body {
 }
 
 .course-flow-page {
+    width: 100%;
+    max-width: 640px;
     min-height: 100vh; /* fallback for browsers without dvh support */
+    background: white;
+    border-radius: 0;
+    position: relative;
+    overflow-x: hidden;
+    box-shadow: none;
+    border: none;
+    padding-bottom: 1px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scrollbar-width: none;
+}
+
+.course-flow-page::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Telegram's Chromium-based webviews */
 }
 
 @supports (min-height: 100dvh) {
     .course-flow-page {
         min-height: 100dvh;
     }
+}
+
+.prerequisite-row {
+    transition: max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
+    overflow: hidden;
+    max-height: 100px;
+}
+
+.prerequisite-row.row-collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-color: transparent;
 }
