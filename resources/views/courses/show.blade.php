@@ -17,8 +17,9 @@
     </a>
     {{-- <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0 md:pt-[clamp(0rem,calc((100vw-48rem)*0.094),1.5rem)]">
          --}}
-    <div class="flex flex-col items-center px-4 md:px-6 py-4 md:py-6">
-        <div class="course-flow-page flex flex-col min-h-dvh md:min-h-0 h-auto overflow-y-auto">
+    <div class="flex flex-col items-center px-0 md:px-6 pb-0 md:pb-6 pt-0">
+        <div class="course-flow-page flex flex-col h-dvh overflow-y-auto md:h-auto">
+
             {{-- Section 1: Unlocked courses (top) --}}
             <div id="unlocks-section" class="pt-6 pb-3 bg-slate-50/50 shrink-0">
                 @include('courses.partials.course-section', [
@@ -54,7 +55,7 @@
                     </div>
                 @else
                     <div class="px-[10%] flex justify-center">
-                        <div class="current-course-card w-full px-6 py-8 md:py-10  rounded-3xl text-white shadow-2xl text-center"
+                        <div class="current-course-card w-full px-6 py-6 md:py-12 rounded-3xl text-white shadow-2xl text-center"
                             style="background: {{ $course['color'] ?? '#0b7af1' }};">
                             <span class="block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
                                 المختارة</span>
