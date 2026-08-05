@@ -98,7 +98,7 @@ body::-webkit-scrollbar {
 .carousel-container {
     display: flex;
     overflow-x: auto;
-    /* scroll-snap-type: x proximity; */
+    scroll-snap-type: x proximity;
     scroll-behavior: auto;
     -webkit-overflow-scrolling: touch;
     gap: 12px;
