@@ -121,7 +121,7 @@ body {
 
 /* Desktop / tablet (md and up): let cards wrap into a grid instead of
    forcing a horizontal scroll — better use of the extra width. */
-
+/* 
 @media (min-width: 768px) {
     .carousel-container {
         flex-wrap: wrap;
@@ -133,7 +133,7 @@ body {
     .carousel-container a {
         flex: 0 1 240px;
     }
-}
+} */
 
 /* @media (min-width: 768px) {
     .carousel-container {
