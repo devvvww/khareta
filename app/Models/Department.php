@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
-    protected $fillable = ['name', 'color','prefix','allows_electives'];
+    protected $fillable = ['name', 'color','prefix','allows_electives','is_general'];
     
     public function courses() : HasMany {
         return $this->hasMany(Course::class);
