@@ -249,7 +249,7 @@ body::-webkit-scrollbar {
     flex: 0 0 100%;
     max-width: min(480px, 100%);
     scroll-snap-align: center;
-    /* scroll-snap-stop: always; */
+    scroll-snap-stop:always;
     scroll-margin-inline: 0;
     text-decoration: none;
     transition: opacity 0.15s ease;
