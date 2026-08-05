@@ -25,23 +25,30 @@ class UpdateCourseManageRequest extends FormRequest
      */
     public function rules(): array
     {
-        $departmentId = $this->route('course')->department_id;
+        $course = $this->route('course');
+        $department = $course->department;
+        $departmentIds = [$department->id];
+
+        if (!$department->is_general) {
+            $general = \App\Models\Department::where('is_general', true)->first();
+            if ($general) {
+                $departmentIds[] = $general->id;
+            }
+        }
 
         return [
             'code_number' => 'required|digits:3',
             'department_prefix_id' => [
                 'required',
-                Rule::exists('department_prefixes', 'id')->where('department_id', $departmentId),
+                Rule::exists('department_prefixes', 'id')->where('department_id', $department->id),
             ],
             'name' => 'required|string|max:255',
             'is_elective' => 'nullable|boolean',
             'prerequisites' => 'nullable|array',
-            'prerequisites.*' => Rule::exists('courses', 'id')->where('department_id', $departmentId),
             'prerequisites.*' => [
-                Rule::exists('courses', 'id')->where('department_id', $departmentId),
-                function ($attribute, $value, $fail) {
-                    $course = $this->route('course'); // omit this line + check entirely in Store request (new course can't have this problem yet)
-                    if ($course && $course->requiredForCourses()->where('courses.id', $value)->exists()) {
+                Rule::exists('courses', 'id')->whereIn('department_id', $departmentIds),
+                function ($attribute, $value, $fail) use ($course) {
+                    if ($course->requiredForCourses()->where('courses.id', $value)->exists()) {
                         $fail('اختيار غير صالح — سيؤدي هذا إلى تبعية دائرية.');
                     }
                 },
