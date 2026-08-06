@@ -77,7 +77,7 @@ class CourseController extends Controller
                 ]),
             ];
         }
-        
+
         $payload = [
             'course' => [
                 'title' => $course->name,
@@ -108,10 +108,10 @@ class CourseController extends Controller
 
     private function sortUnlocksByDepartmentThenGeneral($unlocks, $contextDepartmentId)
     {
+        $contextDepartmentId = (int) $contextDepartmentId;
+
         return $unlocks->sortBy(function ($u) use ($contextDepartmentId) {
-            // 0 = matches the student's own department (sorts first)
-            // 1 = everything else (general courses, sorts after)
-            return $u->department_id === $contextDepartmentId ? 0 : 1;
+            return (int) $u->department_id === $contextDepartmentId ? 0 : 1;
         })->values();
     }
 }
