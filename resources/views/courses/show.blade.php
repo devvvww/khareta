@@ -234,13 +234,16 @@
                 return `
         <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
             <div class="course-card">
-                <div class="card-header" style="background: ${item.color};">
-                    <div class="flex flex-col items-center justify-center gap-1">
-                        <span>${escapeHtml(item.title)}</span>
-                        ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
-                        <span class="h-4 mt-1 flex items-center justify-center">${badgeText}</span>
-                    </div>
-                </div>
+<div class="card-header" style="background: ${item.color};">
+    <div class="course-info">
+        <span>${escapeHtml(item.title)}</span>
+        ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
+    </div>
+
+    <div class="course-badge">
+        ${badgeText}
+    </div>
+</div>
             </div>
         </a>
     `;

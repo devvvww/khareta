@@ -38,13 +38,16 @@ body {
     background-color: #f8fafc;
 }
 
-html, body {
-    scrollbar-width: none; /* Firefox */
+html,
+body {
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Telegram's webviews */
+    display: none;
+    /* Chrome, Safari, Telegram's webviews */
 }
 
 /* ---- Card header gradients (unchanged from the demo) ---- */
@@ -88,6 +91,34 @@ body::-webkit-scrollbar {
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #f1f5f9;
+}
+
+.course-card .card-header {
+    position: relative !important;
+    min-height: 72px;
+}
+
+.course-card .card-header .course-info {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    text-align: center;
+}
+
+
+.course-card .card-header .course-badge {
+    position: absolute;
+    right: 0;
+    bottom: 0.25rem;
+    left: 0;
+    display: flex;
+    height: 1rem;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Mobile: horizontal snap carousel, exactly like the original phone demo.
@@ -230,7 +261,8 @@ body::-webkit-scrollbar {
     }
 }
 
-.course-carousel, .current-course {
+.course-carousel,
+.current-course {
     display: flex;
     direction: rtl;
     overflow-x: auto;
@@ -242,14 +274,15 @@ body::-webkit-scrollbar {
 }
 
 .course-flow-page::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Telegram's Chromium-based webviews */
+    display: none;
+    /* Chrome, Safari, Telegram's Chromium-based webviews */
 }
 
 .course-carousel-slide {
     flex: 0 0 100%;
     max-width: min(480px, 100%);
     scroll-snap-align: center;
-    scroll-snap-stop:always;
+    scroll-snap-stop: always;
     scroll-margin-inline: 0;
     text-decoration: none;
     transition: opacity 0.15s ease;
@@ -323,7 +356,8 @@ body::-webkit-scrollbar {
 .course-flow-page {
     width: 100%;
     max-width: 640px;
-    min-height: 100vh; /* fallback for browsers without dvh support */
+    min-height: 100vh;
+    /* fallback for browsers without dvh support */
     background: white;
     border-radius: 0;
     position: relative;
@@ -338,7 +372,8 @@ body::-webkit-scrollbar {
 }
 
 .course-flow-page::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Telegram's Chromium-based webviews */
+    display: none;
+    /* Chrome, Safari, Telegram's Chromium-based webviews */
 }
 
 @supports (min-height: 100dvh) {
