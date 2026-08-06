@@ -239,26 +239,25 @@
                 const cards = items.map(item => {
                     const hasCount = typeof item.prerequisite_count === 'number';
                     const badge = hasCount ?
-                        `<span class="absolute top-1.5 end-1.5 z-10 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.prerequisite_count <= 1 ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-600'}">
-             ${item.prerequisite_count <= 1 ? '✓ مباشر' : '1 من ' + item.prerequisite_count}
+                        `<span class="absolute bottom-1.5 inset-x-0 flex justify-center text-[9px] font-bold px-1.5 py-0.5 ${item.prerequisite_count <= 1 ? 'text-emerald-100' : 'text-white/80'}">
+             ${item.prerequisite_count <= 1 ? '✓ مباشر' : '+ متطلبات أخرى'}
            </span>` :
                         '';
 
                     return `
         <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
             <div class="course-card relative">
-                ${badge}
                 <div class="card-header" style="background: ${item.color};">
                     <div class="flex flex-col items-center justify-center gap-1">
                         <span>${escapeHtml(item.title)}</span>
                         ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
                     </div>
                 </div>
+                ${badge}
             </div>
         </a>
     `;
                 }).join('');
-                
                 return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
 
