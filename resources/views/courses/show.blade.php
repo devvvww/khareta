@@ -27,6 +27,7 @@
                     'label' => 'مواد تتطلب هذه المادة :',
                     'empty' => 'لا توجد مواد تتطلب هذه المادة',
                     'items' => $unlocks,
+                    'selectedParam' => $selectedParam,
                 ])
             </div>
 
@@ -82,6 +83,7 @@
                     'label' => 'مواد مطلوبة لهذه المادة :',
                     'empty' => 'لا توجد مواد مطلوبة لهذه المادة',
                     'items' => $prerequisites,
+                    'selectedParam' => $selectedParam,
                 ])
             </div>
         </div>
@@ -90,6 +92,7 @@
 
 @push('scripts')
     <script>
+        const selectedParam = @json($selectedParam);
         const prefetchedData = @json($prefetchedData ?? []);
         const currentCourseId = {{ $currentCourseId }};
 
@@ -202,10 +205,10 @@
 
             function renderSection(label, emptyText, items) {
                 const header = `
-                <h2 class="text-sm font-bold px-6 mb-2 text-slate-500 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-                    ${label}
-                </h2>`;
+        <h2 class="text-sm font-bold px-6 mb-2 text-slate-500 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+            ${label}
+        </h2>`;
 
                 if (items.length === 0) {
                     return header +
@@ -213,17 +216,17 @@
                 }
 
                 const cards = items.map(item => `
-                <a href="/courses/${item.id}">
-                    <div class="course-card">
-                        <div class="card-header" style="background: ${item.color};">
-                            <div class="flex flex-col items-center justify-center gap-1">
-                                <span>${escapeHtml(item.title)}</span>
-                                ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
-                            </div>
-                        </div>
+        <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
+            <div class="course-card">
+                <div class="card-header" style="background: ${item.color};">
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        <span>${escapeHtml(item.title)}</span>
+                        ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
                     </div>
-                </a>
-            `).join('');
+                </div>
+            </div>
+        </a>
+    `).join('');
 
                 return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
