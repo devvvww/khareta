@@ -215,27 +215,32 @@
 
                 status.textContent = '';
                 results.innerHTML = courses.map(course => `
-                <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                    <label class="shrink-0 cursor-pointer">
-                        <input type="checkbox" class="course-checkbox w-4 h-4 accent-[#0b7af1]"
-                               data-id="${course.id}"
-                               data-name="${escapeHtml(course.name)}"
-                               data-code="${escapeHtml(course.code || '')}"
-                               data-color="${course.color}"
-                               ${selectedCourses.has(course.id) ? 'checked' : ''}>
-                    </label>
-                    <a href="/courses/${course.id}" class="flex items-center gap-2 min-w-0 flex-1">
-                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
-                        <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
-                        ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
-                    </a>
-                </div>
-            `).join('');
+    <div class="flex items-center gap-2 border-b border-slate-50 last:border-0">
+        <label class="search-result-row flex items-center gap-3 flex-1 min-w-0 px-4 py-2.5 cursor-pointer hover:bg-slate-50">
+            <input type="checkbox" class="course-checkbox hidden"
+                   data-id="${course.id}"
+                   data-name="${escapeHtml(course.name)}"
+                   data-code="${escapeHtml(course.code || '')}"
+                   data-color="${course.color}"
+                   ${selectedCourses.has(course.id) ? 'checked' : ''}>
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
+            <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
+            ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
+        </label>
+
+        <a href="/courses/${course.id}"
+           class="course-open-link shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 me-2"
+           title="فتح المادة">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+    </div>
+`).join('');
             } catch (e) {
                 status.textContent = 'حدث خطأ أثناء التحميل';
             }
         }
-
         results.addEventListener('change', (e) => {
             if (!e.target.classList.contains('course-checkbox')) return;
 
@@ -257,6 +262,8 @@
                 selectedCourses.delete(numId);
             }
 
+            e.target.closest('.search-result-row').classList.toggle('bg-[#0b7af1]/10', e.target.checked);
+
             renderChips();
             updateViewBar();
             syncSelectionToUrl();
@@ -266,7 +273,7 @@
         // while aiming for the checkbox), carry the current selection along so
         // it isn't lost once they land on that course's show page.
         results.addEventListener('click', (e) => {
-            const link = e.target.closest('a[href^="/courses/"]');
+            const link = e.target.closest('.course-open-link');
             if (!link) return;
 
             const ids = [...selectedCourses.keys()];
