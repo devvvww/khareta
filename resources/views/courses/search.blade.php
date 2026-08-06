@@ -117,6 +117,21 @@
         let debounceTimer;
         let showingAll = false;
 
+
+        function syncSelectionToUrl() {
+            const ids = [...selectedCourses.keys()];
+            const url = new URL(window.location.href);
+
+            if (ids.length > 0) {
+                url.searchParams.set('ids', ids.join(','));
+            } else {
+                url.searchParams.delete('ids');
+            }
+
+            history.replaceState({}, '', url);
+        }
+
+
         @foreach ($initialSelection ?? [] as $c)
             selectedCourses.set({{ $c['id'] }}, {
                 name: @json($c['name']),
@@ -244,6 +259,7 @@
 
             renderChips();
             updateViewBar();
+            syncSelectionToUrl();
         });
 
         // If the user clicks a result row directly (intentionally, or by mistake
@@ -266,7 +282,7 @@
             results.querySelectorAll('.course-checkbox').forEach(cb => cb.checked = false);
             renderChips();
             updateViewBar();
-            history.replaceState({}, '', window.location.pathname);
+            syncSelectionToUrl();
         });
 
         function removeCourse(id) {
@@ -277,6 +293,7 @@
 
             renderChips();
             updateViewBar();
+            syncSelectionToUrl();
         }
 
         function renderChips() {
