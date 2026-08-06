@@ -45,7 +45,7 @@
                                 <div class="course-carousel-slide-inner current-course-card rounded-3xl text-white text-center px-6 py-6 md:py-6"
                                     style="background: {{ $item['color'] }};">
                                     <span
-                                        class="slide-label block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
+                                        class="slide-label block text-center text-[12px] uppercase tracking-widest opacity-80">المادة
                                         المختارة</span>
                                     <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $item['title'] }}</h1>
                                     @if (!empty($item['code']))
