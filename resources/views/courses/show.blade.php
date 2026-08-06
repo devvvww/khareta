@@ -107,6 +107,7 @@
             let currentIndex = 0;
             let ticking = false;
 
+
             // Jump straight to the slide matching the course actually being viewed
             const currentSlide = slides.find(s => s.dataset.id == currentCourseId);
             if (currentSlide) {
@@ -116,6 +117,25 @@
 
                 currentIndex = slides.indexOf(currentSlide);
             }
+
+            function equalizeSlideHeights() {
+                const inners = slides.map(s => s.querySelector('.course-carousel-slide-inner'));
+
+                // Reset any previously forced height first, so we measure each
+                // card's true natural height, not a height from a prior pass.
+                inners.forEach(inner => {
+                    inner.style.height = 'auto';
+                });
+
+                const maxHeight = Math.max(...inners.map(inner => inner.offsetHeight));
+
+                inners.forEach(inner => {
+                    inner.style.height = `${maxHeight}px`;
+                });
+            }
+
+
+            equalizeSlideHeights();
 
             function updateCarouselState() {
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;
@@ -134,6 +154,7 @@
                 });
             }
 
+            updateCarouselState();
 
             function slideSectionsIn(direction) {
                 const offset = direction * 24;
@@ -250,8 +271,10 @@
                 scrollEndTimer = setTimeout(loadClosestSlide, 180);
             });
 
-            window.addEventListener('resize', updateCarouselState);
-            updateCarouselState();
+            window.addEventListener('resize', () => {
+                equalizeSlideHeights();
+                updateCarouselState();
+            });
         }
     </script>
 @endpush
