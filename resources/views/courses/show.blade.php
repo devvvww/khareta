@@ -237,11 +237,9 @@
                 }
 
                 const cards = items.map(item => {
-                    const hasCount = typeof item.prerequisite_count === 'number';
-                    const badge = hasCount ?
-                        `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 ${item.prerequisite_count <= 1 ? 'bg-white/25 text-white' : 'bg-white/15 text-white/85'}">
-             ${item.prerequisite_count <= 1 ? '' : '+ متطلبات أخرى'}
-           </span>` :
+                    const showBadge = typeof item.prerequisite_count === 'number' && item.prerequisite_count > 1;
+                    const badge = showBadge ?
+                        `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 bg-white/15 text-white/85">+ متطلبات أخرى</span>` :
                         '';
 
                     return `
@@ -258,6 +256,7 @@
         </a>
     `;
                 }).join('');
+
                 return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
 
