@@ -183,7 +183,7 @@
                     renderSection('مواد مطلوبة لهذه المادة :', 'لا توجد مواد مطلوبة لهذه المادة', data.prerequisites);
 
                 document.title = `${data.title} — مسار المواد الدراسية`;
-                history.pushState({}, '', url);
+                history.replaceState({}, '', url);
 
                 currentIndex = closestIndex;
                 slideSectionsIn(direction);
