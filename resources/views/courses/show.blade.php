@@ -239,21 +239,21 @@
                 const cards = items.map(item => {
                     const hasCount = typeof item.prerequisite_count === 'number';
                     const badge = hasCount ?
-                        `<span class="absolute bottom-1.5 inset-x-0 flex justify-center text-[9px] font-bold px-1.5 py-0.5 ${item.prerequisite_count <= 1 ? 'text-emerald-100' : 'text-white/80'}">
+                        `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 ${item.prerequisite_count <= 1 ? 'bg-white/25 text-white' : 'bg-white/15 text-white/85'}">
              ${item.prerequisite_count <= 1 ? '✓ مباشر' : '+ متطلبات أخرى'}
            </span>` :
                         '';
 
                     return `
         <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
-            <div class="course-card relative">
+            <div class="course-card">
                 <div class="card-header" style="background: ${item.color};">
                     <div class="flex flex-col items-center justify-center gap-1">
                         <span>${escapeHtml(item.title)}</span>
                         ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
+                        ${badge}
                     </div>
                 </div>
-                ${badge}
             </div>
         </a>
     `;

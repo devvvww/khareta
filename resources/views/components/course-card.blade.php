@@ -10,13 +10,15 @@
         <div class="flex flex-col items-center justify-center gap-1">
             <span>{{ $title }}</span>
             @if ($code)
-                <span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">{{ $code }}</span>
+                <span class="text-[10px] font-mono font-normal tracking-widest opacity-75"
+                    dir="ltr">{{ $code }}</span>
             @endif
         </div>
     </div>
     @if (!is_null($prerequisiteCount))
-        <span class="absolute bottom-1.5 inset-x-0 flex justify-center text-[9px] font-bold px-1.5 py-0.5
-            {{ $prerequisiteCount <= 1 ? 'text-emerald-100' : 'text-white/80' }}">
+        <span
+            class="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1
+        {{ $prerequisiteCount <= 1 ? 'bg-emerald-500 text-white' : 'bg-white/15 text-white/85' }}">
             {{ $prerequisiteCount <= 1 ? '✓ مباشر' : '+ متطلبات أخرى' }}
         </span>
     @endif
