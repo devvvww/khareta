@@ -91,6 +91,7 @@
 @push('scripts')
     <script>
         const prefetchedData = @json($prefetchedData ?? []);
+        const currentCourseId = {{ $currentCourseId }};
 
         const carousel = document.getElementById('course-carousel');
         const idsParam = @json($idsParam);
@@ -102,6 +103,16 @@
             let scrollEndTimer;
             let currentIndex = 0;
             let ticking = false;
+
+            // Jump straight to the slide matching the course actually being viewed
+            const currentSlide = slides.find(s => s.dataset.id == currentCourseId);
+            if (currentSlide) {
+                carousel.scrollLeft = currentSlide.offsetLeft -
+                    (carousel.offsetWidth / 2) +
+                    (currentSlide.offsetWidth / 2);
+
+                currentIndex = slides.indexOf(currentSlide);
+            }
 
             function updateCarouselState() {
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;

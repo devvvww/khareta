@@ -20,14 +20,18 @@ class CourseController extends Controller
 
         $selectedIds = $idsParam
             ? array_values(array_unique(array_filter(array_map('intval', explode(',', $idsParam)))))
-            : [];
+            : [$course->id];
 
-        $otherIds = array_values(array_diff($selectedIds, [$course->id]));
-        $otherCourses = $otherIds
-            ? Course::whereIn('id', $otherIds)->get()->sortBy(fn($c) => array_search($c->id, $otherIds))->values()
-            : collect();
+        // Make sure the current course is always included, even if it somehow
+        // wasn't in the ids list (e.g. someone edited the URL manually).
+        if (!in_array($course->id, $selectedIds)) {
+            array_unshift($selectedIds, $course->id);
+        }
 
-        $allCarouselCourses = collect([$course])->concat($otherCourses);
+        $allCarouselCourses = Course::whereIn('id', $selectedIds)
+            ->get()
+            ->sortBy(fn($c) => array_search($c->id, $selectedIds))
+            ->values();
 
         $carousel = $allCarouselCourses->map(fn($c) => [
             'id' => $c->id,
@@ -78,6 +82,7 @@ class CourseController extends Controller
                 'description' => $course->description,
                 'color' => $course->color ?: '#0b7af1',
             ],
+            'currentCourseId' => $course->id,
             'unlocks' => $prefetchedData[$course->id]['unlocks'],
             'prerequisites' => $prefetchedData[$course->id]['prerequisites'],
             'carousel' => $carousel,
