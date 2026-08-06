@@ -39,7 +39,7 @@
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide"
+                            <div class="course-carousel-slide" data-id="{{ $item['id'] }}"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <div class="course-carousel-slide-inner current-course-card rounded-3xl text-white text-center px-6 py-6 md:py-6"
                                     style="background: {{ $item['color'] }};">
@@ -90,6 +90,8 @@
 
 @push('scripts')
     <script>
+        const prefetchedData = @json($prefetchedData ?? []);
+
         const carousel = document.getElementById('course-carousel');
         const idsParam = @json($idsParam);
 
@@ -141,11 +143,12 @@
                 });
             }
 
-            async function loadClosestSlide() {
+            function loadClosestSlide() {
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;
                 let closest = null;
                 let closestDistance = Infinity;
                 let closestIndex = 0;
+                let closestId = null;
 
                 slides.forEach((slide, i) => {
                     const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
@@ -154,6 +157,7 @@
                         closestDistance = distance;
                         closest = slide;
                         closestIndex = i;
+                        closestId = slide.dataset.id;
                     }
                 });
 
@@ -162,30 +166,27 @@
                 const url = closest.dataset.url;
                 if (!url || url === window.location.href) return;
 
+                const data = prefetchedData[closestId];
+                if (!data) {
+                    // Fallback safety net — shouldn't normally happen, but if the
+                    // prefetch is ever missing this course's data, fall back to a
+                    // real navigation rather than showing nothing.
+                    window.location.href = url;
+                    return;
+                }
+
                 const direction = closestIndex > currentIndex ? 1 : -1;
 
-                try {
-                    const res = await fetch(url, {
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    const data = await res.json();
+                unlocksSection.innerHTML =
+                    renderSection('مواد تتطلب هذه المادة :', 'لا توجد مواد تتطلب هذه المادة', data.unlocks);
+                prerequisitesSection.innerHTML =
+                    renderSection('مواد مطلوبة لهذه المادة :', 'لا توجد مواد مطلوبة لهذه المادة', data.prerequisites);
 
-                    unlocksSection.innerHTML =
-                        renderSection('مواد تتطلب هذه المادة :', 'لا توجد مواد تتطلب هذه المادة', data.unlocks);
-                    prerequisitesSection.innerHTML =
-                        renderSection('مواد مطلوبة لهذه المادة :', 'لا توجد مواد مطلوبة لهذه المادة', data
-                            .prerequisites);
+                document.title = `${data.title} — مسار المواد الدراسية`;
+                history.pushState({}, '', url);
 
-                    document.title = `${data.course.title} — مسار المواد الدراسية`;
-                    history.pushState({}, '', url);
-
-                    currentIndex = closestIndex;
-                    slideSectionsIn(direction);
-                } catch (e) {
-                    window.location.href = url;
-                }
+                currentIndex = closestIndex;
+                slideSectionsIn(direction);
             }
 
             function renderSection(label, emptyText, items) {
