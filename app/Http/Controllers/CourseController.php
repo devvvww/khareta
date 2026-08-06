@@ -57,8 +57,13 @@ class CourseController extends Controller
                 $unlocksQuery->whereIn('courses.department_id', $relevantDepartmentIds);
             }
 
+            $unlocksQuery = $c->requiredForCourses()->withCount('prerequisites');
+            if ($contextDepartmentId) {
+                $unlocksQuery->whereIn('courses.department_id', $relevantDepartmentIds);
+            }
+
             $unlocksResult = $unlocksQuery->get();
-            $unlocksResult = $this->sortUnlocksByDepartmentThenGeneral($unlocksResult, $contextDepartmentId); // ← the call
+            $unlocksResult = $this->sortUnlocksByDepartmentThenGeneral($unlocksResult, $contextDepartmentId);
 
             $prefetchedData[$c->id] = [
                 'title' => $c->name,
@@ -68,6 +73,7 @@ class CourseController extends Controller
                     'color' => $u->color ?: '#64748b',
                     'title' => $u->name,
                     'code' => $u->code,
+                    'prerequisite_count' => $u->prerequisites_count,
                 ]),
                 'prerequisites' => $c->prerequisites->map(fn($p) => [
                     'id' => $p->id,
