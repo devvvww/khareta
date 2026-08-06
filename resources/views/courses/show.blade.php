@@ -236,9 +236,18 @@
                         `<div class="section-body"><p class="section-body-empty text-slate-400 text-sm">${emptyText}</p></div>`;
                 }
 
-                const cards = items.map(item => `
+                const cards = items.map(item => {
+                    const hasCount = typeof item.prerequisite_count === 'number';
+                    const badge = hasCount ?
+                        `<span class="absolute top-1.5 end-1.5 z-10 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.prerequisite_count <= 1 ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-600'}">
+             ${item.prerequisite_count <= 1 ? '✓ مباشر' : '1 من ' + item.prerequisite_count}
+           </span>` :
+                        '';
+
+                    return `
         <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
-            <div class="course-card">
+            <div class="course-card relative">
+                ${badge}
                 <div class="card-header" style="background: ${item.color};">
                     <div class="flex flex-col items-center justify-center gap-1">
                         <span>${escapeHtml(item.title)}</span>
@@ -247,8 +256,9 @@
                 </div>
             </div>
         </a>
-    `).join('');
-
+    `;
+                }).join('');
+                
                 return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
 
