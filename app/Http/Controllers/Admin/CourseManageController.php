@@ -73,10 +73,11 @@ class CourseManageController extends Controller
     public function update(UpdateCourseManageRequest $request, Course $course)
     {
         $data = $request->validated();
+        $prefix = $course->department->prefixes()->findOrFail($data['department_prefix_id']);
 
         $data['is_elective'] = $course->department->allows_electives ? $request->boolean('is_elective') : false;
         $data['color'] = $data['is_elective'] ? '#10b981' : $course->department->color;
-        $data['code'] = $course->department->prefix . $data['code_number'];
+        $data['code'] = $prefix->prefix . $data['code_number'];
         unset($data['code_number']);
 
         $course->update($data);
@@ -86,7 +87,7 @@ class CourseManageController extends Controller
             ->route('admin.departments.courses.index', $course->department_id)
             ->with('status', 'تم تحديث المادة بنجاح');
     }
-
+    
     public function destroy(Course $course)
     {
         $departmentId = $course->department_id;
