@@ -60,7 +60,18 @@ class DepartmentManageController extends Controller
         $primaryPrefixValue = strtoupper($data['primary_prefix']);
         unset($data['primary_prefix']);
 
+        $colorChanged = array_key_exists('color', $data)
+            && $data['color'] !== $department->color;
+
         $department->update($data);
+
+        if ($colorChanged) {
+            if ($colorChanged) {
+                $department->courses()
+                    ->where('is_elective', false)
+                    ->update(['color' => $department->color]);
+            }
+        }
 
         $primaryPrefix = $department->prefixes()->oldest()->first();
         if ($primaryPrefix) {
@@ -71,7 +82,7 @@ class DepartmentManageController extends Controller
 
         return redirect()->route('admin.departments.index')->with('status', 'تم تحديث القسم بنجاح');
     }
-    
+
     public function destroy(Department $department)
     {
         $department->delete();

@@ -27,6 +27,7 @@
                     'label' => 'مواد تتطلب هذه المادة :',
                     'empty' => 'لا توجد مواد تتطلب هذه المادة',
                     'items' => $unlocks,
+                    'selectedParam' => $selectedParam,
                 ])
             </div>
 
@@ -39,12 +40,12 @@
                 @if ($carousel->count() > 1)
                     <div id="course-carousel" class="course-carousel">
                         @foreach ($carousel as $item)
-                            <div class="course-carousel-slide"
+                            <div class="course-carousel-slide" data-id="{{ $item['id'] }}"
                                 data-url="{{ route('courses.show', $item['id']) }}{{ $idsParam ? '?ids=' . $idsParam : '' }}">
                                 <div class="course-carousel-slide-inner current-course-card rounded-3xl text-white text-center px-6 py-6 md:py-6"
                                     style="background: {{ $item['color'] }};">
                                     <span
-                                        class="slide-label block text-center text-[10px] uppercase tracking-widest opacity-80">المادة
+                                        class="slide-label block text-center text-[12px] uppercase tracking-widest opacity-80">المادة
                                         المختارة</span>
                                     <h1 class="text-xl md:text-2xl font-extrabold mt-1">{{ $item['title'] }}</h1>
                                     @if (!empty($item['code']))
@@ -82,6 +83,7 @@
                     'label' => 'مواد مطلوبة لهذه المادة :',
                     'empty' => 'لا توجد مواد مطلوبة لهذه المادة',
                     'items' => $prerequisites,
+                    'selectedParam' => $selectedParam,
                 ])
             </div>
         </div>
@@ -90,6 +92,10 @@
 
 @push('scripts')
     <script>
+        const selectedParam = @json($selectedParam);
+        const prefetchedData = @json($prefetchedData ?? []);
+        const currentCourseId = {{ $currentCourseId }};
+
         const carousel = document.getElementById('course-carousel');
         const idsParam = @json($idsParam);
 
@@ -100,6 +106,36 @@
             let scrollEndTimer;
             let currentIndex = 0;
             let ticking = false;
+
+
+            // Jump straight to the slide matching the course actually being viewed
+            const currentSlide = slides.find(s => s.dataset.id == currentCourseId);
+            if (currentSlide) {
+                carousel.scrollLeft = currentSlide.offsetLeft -
+                    (carousel.offsetWidth / 2) +
+                    (currentSlide.offsetWidth / 2);
+
+                currentIndex = slides.indexOf(currentSlide);
+            }
+
+            function equalizeSlideHeights() {
+                const inners = slides.map(s => s.querySelector('.course-carousel-slide-inner'));
+
+                // Reset any previously forced height first, so we measure each
+                // card's true natural height, not a height from a prior pass.
+                inners.forEach(inner => {
+                    inner.style.height = 'auto';
+                });
+
+                const maxHeight = Math.max(...inners.map(inner => inner.offsetHeight));
+
+                inners.forEach(inner => {
+                    inner.style.height = `${maxHeight}px`;
+                });
+            }
+
+
+            equalizeSlideHeights();
 
             function updateCarouselState() {
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;
@@ -118,6 +154,7 @@
                 });
             }
 
+            updateCarouselState();
 
             function slideSectionsIn(direction) {
                 const offset = direction * 24;
@@ -141,11 +178,12 @@
                 });
             }
 
-            async function loadClosestSlide() {
+            function loadClosestSlide() {
                 const center = carousel.scrollLeft + carousel.offsetWidth / 2;
                 let closest = null;
                 let closestDistance = Infinity;
                 let closestIndex = 0;
+                let closestId = null;
 
                 slides.forEach((slide, i) => {
                     const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
@@ -154,6 +192,7 @@
                         closestDistance = distance;
                         closest = slide;
                         closestIndex = i;
+                        closestId = slide.dataset.id;
                     }
                 });
 
@@ -162,38 +201,35 @@
                 const url = closest.dataset.url;
                 if (!url || url === window.location.href) return;
 
+                const data = prefetchedData[closestId];
+                if (!data) {
+                    // Fallback safety net — shouldn't normally happen, but if the
+                    // prefetch is ever missing this course's data, fall back to a
+                    // real navigation rather than showing nothing.
+                    window.location.href = url;
+                    return;
+                }
+
                 const direction = closestIndex > currentIndex ? 1 : -1;
 
-                try {
-                    const res = await fetch(url, {
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    const data = await res.json();
+                unlocksSection.innerHTML =
+                    renderSection('مواد تتطلب هذه المادة :', 'لا توجد مواد تتطلب هذه المادة', data.unlocks);
+                prerequisitesSection.innerHTML =
+                    renderSection('مواد مطلوبة لهذه المادة :', 'لا توجد مواد مطلوبة لهذه المادة', data.prerequisites);
 
-                    unlocksSection.innerHTML =
-                        renderSection('مواد تتطلب هذه المادة :', 'لا توجد مواد تتطلب هذه المادة', data.unlocks);
-                    prerequisitesSection.innerHTML =
-                        renderSection('مواد مطلوبة لهذه المادة :', 'لا توجد مواد مطلوبة لهذه المادة', data
-                            .prerequisites);
+                document.title = `${data.title} — مسار المواد الدراسية`;
+                history.replaceState({}, '', url);
 
-                    document.title = `${data.course.title} — مسار المواد الدراسية`;
-                    history.pushState({}, '', url);
-
-                    currentIndex = closestIndex;
-                    slideSectionsIn(direction);
-                } catch (e) {
-                    window.location.href = url;
-                }
+                currentIndex = closestIndex;
+                slideSectionsIn(direction);
             }
 
             function renderSection(label, emptyText, items) {
                 const header = `
-                <h2 class="text-sm font-bold px-6 mb-2 text-slate-500 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-                    ${label}
-                </h2>`;
+        <h2 class="text-sm font-bold px-6 mb-2 text-slate-500 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+            ${label}
+        </h2>`;
 
                 if (items.length === 0) {
                     return header +
@@ -201,17 +237,17 @@
                 }
 
                 const cards = items.map(item => `
-                <a href="/courses/${item.id}">
-                    <div class="course-card">
-                        <div class="card-header" style="background: ${item.color};">
-                            <div class="flex flex-col items-center justify-center gap-1">
-                                <span>${escapeHtml(item.title)}</span>
-                                ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
-                            </div>
-                        </div>
+        <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
+            <div class="course-card">
+                <div class="card-header" style="background: ${item.color};">
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        <span>${escapeHtml(item.title)}</span>
+                        ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
                     </div>
-                </a>
-            `).join('');
+                </div>
+            </div>
+        </a>
+    `).join('');
 
                 return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
@@ -235,8 +271,10 @@
                 scrollEndTimer = setTimeout(loadClosestSlide, 180);
             });
 
-            window.addEventListener('resize', updateCarouselState);
-            updateCarouselState();
+            window.addEventListener('resize', () => {
+                equalizeSlideHeights();
+                updateCarouselState();
+            });
         }
     </script>
 @endpush

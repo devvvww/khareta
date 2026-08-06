@@ -89,7 +89,7 @@
     <div id="view-bar"
         class="hidden fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-30">
         <a id="view-selection-btn" href="#"
-            class="block text-center bg-[#0b7af1] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl">
+            class="block text-center bg-[#0a74e5] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl">
             عرض
         </a>
     </div>
@@ -116,6 +116,21 @@
         const selectedCourses = new Map();
         let debounceTimer;
         let showingAll = false;
+
+
+        function syncSelectionToUrl() {
+            const ids = [...selectedCourses.keys()];
+            const url = new URL(window.location.href);
+
+            if (ids.length > 0) {
+                url.searchParams.set('ids', ids.join(','));
+            } else {
+                url.searchParams.delete('ids');
+            }
+
+            history.replaceState({}, '', url);
+        }
+
 
         @foreach ($initialSelection ?? [] as $c)
             selectedCourses.set({{ $c['id'] }}, {
@@ -200,27 +215,39 @@
 
                 status.textContent = '';
                 results.innerHTML = courses.map(course => `
-                <div class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                    <label class="shrink-0 cursor-pointer">
-                        <input type="checkbox" class="course-checkbox w-4 h-4 accent-[#0b7af1]"
-                               data-id="${course.id}"
-                               data-name="${escapeHtml(course.name)}"
-                               data-code="${escapeHtml(course.code || '')}"
-                               data-color="${course.color}"
-                               ${selectedCourses.has(course.id) ? 'checked' : ''}>
-                    </label>
-                    <a href="/courses/${course.id}" class="flex items-center gap-2 min-w-0 flex-1">
-                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
-                        <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
-                        ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
-                    </a>
-                </div>
-            `).join('');
+    <div class="flex items-center gap-2 border-b border-slate-50 last:border-0">
+        <label class="search-result-row flex items-center gap-3 flex-1 min-w-0 px-4 py-2.5 cursor-pointer hover:bg-slate-50">
+            <span class="relative w-5 h-5 shrink-0">
+                <input type="checkbox" class="course-checkbox absolute inset-0 opacity-0 cursor-pointer"
+                       data-id="${course.id}"
+                       data-name="${escapeHtml(course.name)}"
+                       data-code="${escapeHtml(course.code || '')}"
+                       data-color="${course.color}"
+                       ${selectedCourses.has(course.id) ? 'checked' : ''}>
+                <span class="check-indicator w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selectedCourses.has(course.id) ? 'bg-[#0b7af1] border-[#0b7af1]' : 'border-slate-300'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white ${selectedCourses.has(course.id) ? '' : 'hidden'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </span>
+            </span>
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
+            <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
+            ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
+        </label>
+
+        <a href="/courses/${course.id}"
+           class="course-open-link shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 me-2"
+           title="فتح المادة">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+    </div>
+`).join('');
             } catch (e) {
                 status.textContent = 'حدث خطأ أثناء التحميل';
             }
         }
-
         results.addEventListener('change', (e) => {
             if (!e.target.classList.contains('course-checkbox')) return;
 
@@ -242,15 +269,23 @@
                 selectedCourses.delete(numId);
             }
 
+            const indicator = e.target.parentElement.querySelector('.check-indicator');
+            const checkIcon = indicator.querySelector('svg');
+            indicator.classList.toggle('bg-[#0b7af1]', e.target.checked);
+            indicator.classList.toggle('border-[#0b7af1]', e.target.checked);
+            indicator.classList.toggle('border-slate-300', !e.target.checked);
+            checkIcon.classList.toggle('hidden', !e.target.checked);
+
             renderChips();
             updateViewBar();
+            syncSelectionToUrl();
         });
 
         // If the user clicks a result row directly (intentionally, or by mistake
         // while aiming for the checkbox), carry the current selection along so
         // it isn't lost once they land on that course's show page.
         results.addEventListener('click', (e) => {
-            const link = e.target.closest('a[href^="/courses/"]');
+            const link = e.target.closest('.course-open-link');
             if (!link) return;
 
             const ids = [...selectedCourses.keys()];
@@ -266,7 +301,7 @@
             results.querySelectorAll('.course-checkbox').forEach(cb => cb.checked = false);
             renderChips();
             updateViewBar();
-            history.replaceState({}, '', window.location.pathname);
+            syncSelectionToUrl();
         });
 
         function removeCourse(id) {
@@ -277,6 +312,7 @@
 
             renderChips();
             updateViewBar();
+            syncSelectionToUrl();
         }
 
         function renderChips() {

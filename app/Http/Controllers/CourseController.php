@@ -20,46 +20,63 @@ class CourseController extends Controller
 
         $selectedIds = $idsParam
             ? array_values(array_unique(array_filter(array_map('intval', explode(',', $idsParam)))))
-            : [];
+            : [$course->id];
 
-        $otherIds = array_values(array_diff($selectedIds, [$course->id]));
-        $otherCourses = $otherIds
-            ? Course::whereIn('id', $otherIds)->get()->sortBy(fn($c) => array_search($c->id, $otherIds))->values()
-            : collect();
+        // Make sure the current course is always included, even if it somehow
+        // wasn't in the ids list (e.g. someone edited the URL manually).
+        if (!in_array($course->id, $selectedIds)) {
+            array_unshift($selectedIds, $course->id);
+        }
 
-        $carousel = collect([[
-            'id' => $course->id,
-            'title' => $course->name,
-            'code' => $course->code,
-            'color' => $course->color ?: '#0b7af1',
-        ]])->concat($otherCourses->map(fn($c) => [
+        $allCarouselCourses = Course::whereIn('id', $selectedIds)
+            ->get()
+            ->sortBy(fn($c) => array_search($c->id, $selectedIds))
+            ->values();
+
+        $carousel = $allCarouselCourses->map(fn($c) => [
             'id' => $c->id,
             'title' => $c->name,
             'code' => $c->code,
             'color' => $c->color ?: '#0b7af1',
-        ]));
+        ]);
 
-        // Unlocks are scoped to the student's current department context
-        // (plus general education, which stays relevant regardless of major)
-        // so a general course only shows the unlocks actually relevant to
-        // the path the student is currently on — not every department's
-        // independent use of that same general course.
         $contextDepartmentId = session('department_id');
+        $generalDepartmentId = Department::where('is_general', true)->value('id');
+        $relevantDepartmentIds = array_unique(array_filter([$contextDepartmentId, $generalDepartmentId]));
 
-        $unlocksQuery = $course->requiredForCourses();
+        // Pre-fetch unlocks + prerequisites for EVERY course in the carousel,
+        // not just the one currently centered — this is what lets swiping
+        // render instantly with zero network requests.
+        $prefetchedData = [];
 
-        if ($contextDepartmentId) {
-            $generalDepartmentId = Department::where('is_general', true)->value('id');
+        foreach ($allCarouselCourses as $c) {
+            $c->loadMissing('prerequisites');
 
-            $relevantDepartmentIds = array_unique(array_filter([
-                $contextDepartmentId,
-                $generalDepartmentId,
-            ]));
+            $unlocksQuery = $c->requiredForCourses();
+            if ($contextDepartmentId) {
+                $unlocksQuery->whereIn('courses.department_id', $relevantDepartmentIds);
+            }
 
-            $unlocksQuery->whereIn('courses.department_id', $relevantDepartmentIds);
+            $unlocksResult = $unlocksQuery->get();
+            $unlocksResult = $this->sortUnlocksByDepartmentThenGeneral($unlocksResult, $contextDepartmentId); // ← the call
+
+            $prefetchedData[$c->id] = [
+                'title' => $c->name,
+                'code' => $c->code,
+                'unlocks' => $unlocksResult->map(fn($u) => [
+                    'id' => $u->id,
+                    'color' => $u->color ?: '#64748b',
+                    'title' => $u->name,
+                    'code' => $u->code,
+                ]),
+                'prerequisites' => $c->prerequisites->map(fn($p) => [
+                    'id' => $p->id,
+                    'color' => $p->color ?: '#64748b',
+                    'title' => $p->name,
+                    'code' => $p->code,
+                ]),
+            ];
         }
-
-        $unlocks = $unlocksQuery->get();
 
         $payload = [
             'course' => [
@@ -68,19 +85,11 @@ class CourseController extends Controller
                 'description' => $course->description,
                 'color' => $course->color ?: '#0b7af1',
             ],
-            'unlocks' => $unlocks->map(fn($c) => [
-                'id' => $c->id,
-                'color' => $c->color ?: '#64748b',
-                'title' => $c->name,
-                'code' => $c->code,
-            ]),
-            'prerequisites' => $course->prerequisites->map(fn($c) => [
-                'id' => $c->id,
-                'color' => $c->color ?: '#64748b',
-                'title' => $c->name,
-                'code' => $c->code,
-            ]),
+            'currentCourseId' => $course->id,
+            'unlocks' => $prefetchedData[$course->id]['unlocks'],
+            'prerequisites' => $prefetchedData[$course->id]['prerequisites'],
             'carousel' => $carousel,
+            'prefetchedData' => $prefetchedData,
             'idsParam' => $idsParam,
             'selectedParam' => $selectedParam,
         ];
@@ -96,8 +105,13 @@ class CourseController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+
+    private function sortUnlocksByDepartmentThenGeneral($unlocks, $contextDepartmentId)
     {
-        //
+        $contextDepartmentId = (int) $contextDepartmentId;
+
+        return $unlocks->sortBy(function ($u) use ($contextDepartmentId) {
+            return (int) $u->department_id === $contextDepartmentId ? 0 : 1;
+        })->values();
     }
 }
