@@ -57,10 +57,13 @@ class CourseController extends Controller
                 $unlocksQuery->whereIn('courses.department_id', $relevantDepartmentIds);
             }
 
+            $unlocksResult = $unlocksQuery->get();
+            $unlocksResult = $this->sortUnlocksByDepartmentThenGeneral($unlocksResult, $contextDepartmentId); // ← the call
+
             $prefetchedData[$c->id] = [
                 'title' => $c->name,
                 'code' => $c->code,
-                'unlocks' => $unlocksQuery->get()->map(fn($u) => [
+                'unlocks' => $unlocksResult->map(fn($u) => [
                     'id' => $u->id,
                     'color' => $u->color ?: '#64748b',
                     'title' => $u->name,
@@ -74,7 +77,7 @@ class CourseController extends Controller
                 ]),
             ];
         }
-
+        
         $payload = [
             'course' => [
                 'title' => $course->name,
@@ -102,8 +105,13 @@ class CourseController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+
+    private function sortUnlocksByDepartmentThenGeneral($unlocks, $contextDepartmentId)
     {
-        //
+        return $unlocks->sortBy(function ($u) use ($contextDepartmentId) {
+            // 0 = matches the student's own department (sorts first)
+            // 1 = everything else (general courses, sorts after)
+            return $u->department_id === $contextDepartmentId ? 0 : 1;
+        })->values();
     }
 }
