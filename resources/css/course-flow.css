@@ -100,7 +100,7 @@ body::-webkit-scrollbar {
     overflow-x: auto;
     /* scroll-snap-type: x proximity; */
     scroll-behavior: auto;
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; */
     gap: 12px;
     padding: 10px 20px;
     scrollbar-width: none;
@@ -230,7 +230,7 @@ body::-webkit-scrollbar {
     }
 }
 
-.course-carousel {
+.course-carousel, .current-course {
     display: flex;
     direction: rtl;
     overflow-x: auto;
@@ -249,10 +249,10 @@ body::-webkit-scrollbar {
     flex: 0 0 100%;
     max-width: min(480px, 100%);
     scroll-snap-align: center;
-    /* scroll-snap-stop: always; */
+    scroll-snap-stop:always;
     scroll-margin-inline: 0;
     text-decoration: none;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition: opacity 0.15s ease;
 }
 
 .slide-label {
@@ -325,7 +325,7 @@ body::-webkit-scrollbar {
     border: none;
     padding-bottom: 1px;
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; */
     touch-action: pan-y;
     scrollbar-width: none;
 }

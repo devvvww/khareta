@@ -3,6 +3,11 @@
 @section('title', $department->exists ? 'تعديل قسم' : 'إضافة قسم')
 
 @section('content')
+    @php
+        $palette = ['#8b5cf6', '#f97316', '#ec4899', '#6366f1', '#78716c', '#0ea5e9', '#84cc16', '#f43f5e'];
+        // Note: #0b7af1 (blue, reserved for the general department) and
+        // #10b981 (green, reserved for electives) are intentionally excluded here.
+    @endphp
     <div class="max-w-md mx-auto p-6">
         <a href="{{ route('admin.departments.index') }}"
             class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 mb-1">
@@ -75,10 +80,12 @@
                 <label class="block text-sm font-bold text-slate-700 mb-2 mt-6">رموز القسم الإضافية</label>
                 <div id="extra-prefix-chips" class="flex flex-wrap gap-2 mb-3">
                     @foreach ($additionalPrefixes as $extra)
-                        <span class="extra-prefix-chip flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] text-sm font-bold px-3 py-1.5 rounded-full"
+                        <span
+                            class="extra-prefix-chip flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] text-sm font-bold px-3 py-1.5 rounded-full"
                             dir="ltr" data-id="{{ $extra->id }}">
                             {{ $extra->prefix }}
-                            <button type="button" class="remove-extra-prefix text-xs" data-id="{{ $extra->id }}">×</button>
+                            <button type="button" class="remove-extra-prefix text-xs"
+                                data-id="{{ $extra->id }}">×</button>
                         </span>
                     @endforeach
                     @if ($additionalPrefixes->isEmpty())
@@ -231,20 +238,24 @@
                 if (!value) return;
 
                 try {
-                    const res = await fetch('{{ $department->exists ? route('admin.departments.prefixes.store', $department) : '#' }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        },
-                        body: JSON.stringify({ prefix: value }),
-                    });
+                    const res = await fetch(
+                        '{{ $department->exists ? route('admin.departments.prefixes.store', $department) : '#' }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            },
+                            body: JSON.stringify({
+                                prefix: value
+                            }),
+                        });
 
                     const data = await res.json();
 
                     if (!res.ok) {
-                        extraPrefixError.textContent = data.message || (data.errors && data.errors.prefix ? data.errors.prefix[0] : 'حدث خطأ ما');
+                        extraPrefixError.textContent = data.message || (data.errors && data.errors.prefix ? data
+                            .errors.prefix[0] : 'حدث خطأ ما');
                         extraPrefixError.classList.remove('hidden');
                         return;
                     }
@@ -252,10 +263,12 @@
                     if (noExtraPrefixesMsg) noExtraPrefixesMsg.remove();
 
                     const chip = document.createElement('span');
-                    chip.className = 'extra-prefix-chip flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] text-sm font-bold px-3 py-1.5 rounded-full';
+                    chip.className =
+                        'extra-prefix-chip flex items-center gap-1.5 bg-[#0b7af1]/10 text-[#0b7af1] text-sm font-bold px-3 py-1.5 rounded-full';
                     chip.dir = 'ltr';
                     chip.dataset.id = data.id;
-                    chip.innerHTML = `${data.prefix} <button type="button" class="remove-extra-prefix text-xs" data-id="${data.id}">×</button>`;
+                    chip.innerHTML =
+                        `${data.prefix} <button type="button" class="remove-extra-prefix text-xs" data-id="${data.id}">×</button>`;
                     extraPrefixChips.appendChild(chip);
 
                     extraPrefixInput.value = '';

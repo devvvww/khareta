@@ -28,7 +28,17 @@ class UpdateDepartmentManageRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'primary_prefix' => 'required|string|max:10|unique:department_prefixes,prefix,' . $primaryPrefix?->id,
-            'color' => 'nullable|string|max:7',
+            'color' => [
+                'nullable',
+                'string',
+                'max:7',
+                function ($attribute, $value, $fail) {
+                    $reserved = ['#0b7af1', '#10b981'];
+                    if ($value && in_array(strtolower($value), $reserved)) {
+                        $fail('هذا اللون محجوز ولا يمكن استخدامه.');
+                    }
+                },
+            ],
             'allows_electives' => 'nullable|boolean',
         ];
     }

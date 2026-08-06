@@ -25,7 +25,17 @@ class StoreDepartmentManageRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'prefix' => 'required|string|max:10|unique:departments,prefix',
-            'color' => 'nullable|string|max:7',
+            'color' => [
+                'nullable',
+                'string',
+                'max:7',
+                function ($attribute, $value, $fail) {
+                    $reserved = ['#0b7af1', '#10b981'];
+                    if ($value && in_array(strtolower($value), $reserved)) {
+                        $fail('هذا اللون محجوز ولا يمكن استخدام.');
+                    }
+                },
+            ],
             'allows_electives' => 'nullable|boolean',
             'prefixes' => 'nullable|array',
             'prefixes.*' => 'required|string|max:10|distinct|unique:department_prefixes,prefix'

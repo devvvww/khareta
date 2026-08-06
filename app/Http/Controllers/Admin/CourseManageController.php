@@ -26,7 +26,7 @@ class CourseManageController extends Controller
 
     public function create(Department $department)
     {
-        $allCourses = Course::where('department_id', $department->id)->orderBy('name')->get();
+        $allCourses = $this->prerequisiteCandidates($department);
 
         return view('admin.courses.form', [
             'department' => $department,
@@ -58,16 +58,13 @@ class CourseManageController extends Controller
     public function edit(Course $course)
     {
         $department = $course->department;
-        $allCourses = Course::where('department_id', $department->id)->where('id', '!=', $course->id)->orderBy('name')->get();
+        $allCourses = $this->prerequisiteCandidates($department, excludeCourseId: $course->id);
         $selectedPrerequisiteIds = $course->prerequisites->pluck('id')->toArray();
 
         $codeNumber = $course->departmentPrefix
             ? substr($course->code, strlen($course->departmentPrefix->prefix))
             : $course->code;
 
-        // Any course that already lists THIS course as one of its own
-        // prerequisites can't also become a prerequisite of this course —
-        // that would create a cycle (A needs B, B needs A).
         $disabledPrerequisiteIds = $course->requiredForCourses->pluck('id')->toArray();
 
         return view('admin.courses.form', compact('department', 'course', 'allCourses', 'selectedPrerequisiteIds', 'codeNumber', 'disabledPrerequisiteIds'));
@@ -76,10 +73,11 @@ class CourseManageController extends Controller
     public function update(UpdateCourseManageRequest $request, Course $course)
     {
         $data = $request->validated();
+        $prefix = $course->department->prefixes()->findOrFail($data['department_prefix_id']);
 
         $data['is_elective'] = $course->department->allows_electives ? $request->boolean('is_elective') : false;
         $data['color'] = $data['is_elective'] ? '#10b981' : $course->department->color;
-        $data['code'] = $course->department->prefix . $data['code_number'];
+        $data['code'] = $prefix->prefix . $data['code_number'];
         unset($data['code_number']);
 
         $course->update($data);
@@ -89,7 +87,7 @@ class CourseManageController extends Controller
             ->route('admin.departments.courses.index', $course->department_id)
             ->with('status', 'تم تحديث المادة بنجاح');
     }
-
+    
     public function destroy(Course $course)
     {
         $departmentId = $course->department_id;
@@ -98,5 +96,22 @@ class CourseManageController extends Controller
         return redirect()
             ->route('admin.departments.courses.index', $departmentId)
             ->with('status', 'تم حذف المادة');
+    }
+
+    private function prerequisiteCandidates(Department $department, ?int $excludeCourseId = null)
+    {
+        $departmentIds = [$department->id];
+
+        if (!$department->is_general) {
+            $generalDepartment = Department::where('is_general', true)->first();
+            if ($generalDepartment) {
+                $departmentIds[] = $generalDepartment->id;
+            }
+        }
+
+        return Course::whereIn('department_id', $departmentIds)
+            ->when($excludeCourseId, fn($q) => $q->where('id', '!=', $excludeCourseId))
+            ->orderBy('name')
+            ->get();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -12,7 +13,7 @@ class CourseController extends Controller
      */
     public function show(Course $course, Request $request)
     {
-        $course->load(['prerequisites', 'requiredForCourses']);
+        $course->load('prerequisites');
 
         $idsParam = $request->query('ids');
         $selectedParam = $request->query('selected', $idsParam);
@@ -38,6 +39,28 @@ class CourseController extends Controller
             'color' => $c->color ?: '#0b7af1',
         ]));
 
+        // Unlocks are scoped to the student's current department context
+        // (plus general education, which stays relevant regardless of major)
+        // so a general course only shows the unlocks actually relevant to
+        // the path the student is currently on — not every department's
+        // independent use of that same general course.
+        $contextDepartmentId = session('department_id');
+
+        $unlocksQuery = $course->requiredForCourses();
+
+        if ($contextDepartmentId) {
+            $generalDepartmentId = Department::where('is_general', true)->value('id');
+
+            $relevantDepartmentIds = array_unique(array_filter([
+                $contextDepartmentId,
+                $generalDepartmentId,
+            ]));
+
+            $unlocksQuery->whereIn('courses.department_id', $relevantDepartmentIds);
+        }
+
+        $unlocks = $unlocksQuery->get();
+
         $payload = [
             'course' => [
                 'title' => $course->name,
@@ -45,7 +68,7 @@ class CourseController extends Controller
                 'description' => $course->description,
                 'color' => $course->color ?: '#0b7af1',
             ],
-            'unlocks' => $course->requiredForCourses->map(fn($c) => [
+            'unlocks' => $unlocks->map(fn($c) => [
                 'id' => $c->id,
                 'color' => $c->color ?: '#64748b',
                 'title' => $c->name,
@@ -70,7 +93,6 @@ class CourseController extends Controller
 
         return view('courses.show', $payload);
     }
-
     /**
      * Show the form for editing the specified resource.
      */

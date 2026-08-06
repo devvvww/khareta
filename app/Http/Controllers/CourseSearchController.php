@@ -12,29 +12,52 @@ class CourseSearchController extends Controller
     {
         if ($request->wantsJson()) {
             $query = $request->input('q');
+            $currentDepartmentId = session('department_id');
+            $currentDepartment = Department::find($currentDepartmentId);
 
-            $courses = Course::query()
-                ->where('department_id', session('department_id'))
-                ->when($query, function ($builder) use ($query) {
-                    $normalized = $this->normalizeArabic($query);
+            $limit = $query ? 20 : 100;
 
-                    $builder->where(function ($b) use ($normalized, $query) {
-                        $b->whereRaw($this->normalizedColumnSql('name') . ' LIKE ?', ["%{$normalized}%"])
-                            ->orWhere('code', 'like', "%{$query}%");
-                    });
-                })
+            // Group A: the student's own department
+            $ownCourses = Course::query()
+                ->where('department_id', $currentDepartmentId)
+                ->when($query, fn($builder) => $this->applySearch($builder, $query))
                 ->orderBy('name')
-                ->limit($query ? 20 : 100)
-                ->get()
-                ->map(fn($c) => [
-                    'id' => $c->id,
-                    'name' => $c->name,
-                    'code' => $c->code,
-                    'color' => $c->color ?: '#64748b',
-                ]);
+                ->limit($limit)
+                ->get();
+
+            $results = $ownCourses;
+
+            // Group B: general department courses — skipped entirely if the
+            // current department IS the general one (it only ever shows its own).
+            if ($currentDepartment && !$currentDepartment->is_general) {
+                $generalDepartment = Department::where('is_general', true)->first();
+
+                if ($generalDepartment) {
+                    $remaining = $limit - $ownCourses->count();
+
+                    if ($remaining > 0) {
+                        $generalCourses = Course::query()
+                            ->where('department_id', $generalDepartment->id)
+                            ->when($query, fn($builder) => $this->applySearch($builder, $query))
+                            ->orderBy('name')
+                            ->limit($remaining)
+                            ->get();
+
+                        $results = $results->concat($generalCourses);
+                    }
+                }
+            }
+
+            $courses = $results->map(fn($c) => [
+                'id' => $c->id,
+                'name' => $c->name,
+                'code' => $c->code,
+                'color' => $c->color ?: '#64748b',
+            ]);
 
             return response()->json($courses);
         }
+
 
         $idsParam = $request->query('ids');
         $initialSelection = collect();
@@ -59,6 +82,21 @@ class CourseSearchController extends Controller
             'currentDepartment' => Department::find(session('department_id')),
             'departments' => Department::orderBy('name')->get(),
         ]);
+    }
+
+
+    /**
+     * Shared Arabic-normalized search condition, applied identically to
+     * both the own-department and general-department queries.
+     */
+    private function applySearch($builder, string $query)
+    {
+        $normalized = $this->normalizeArabic($query);
+
+        return $builder->where(function ($b) use ($normalized, $query) {
+            $b->whereRaw($this->normalizedColumnSql('name') . ' LIKE ?', ["%{$normalized}%"])
+                ->orWhere('code', 'like', "%{$query}%");
+        });
     }
 
     /**
