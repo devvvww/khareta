@@ -12,7 +12,8 @@
             @foreach ($items as $item)
                 <a
                     href="{{ route('courses.show', $item['id']) }}{{ $selectedParam ? '?selected=' . $selectedParam : '' }}">
-                    <x-course-card :color="$item['color']" :title="$item['title']" :code="$item['code'] ?? ''" :prerequisiteCount="$item['prerequisite_count'] ?? null" />
+                    <x-course-card :color="$item['color']" :title="$item['title']" :code="$item['code'] ?? ''" :prerequisiteCount="$item['prerequisite_count'] ?? null"
+                        :reserveBadgeSlot="true" />
                 </a>
             @endforeach
         </div>

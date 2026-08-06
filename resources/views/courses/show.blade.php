@@ -224,6 +224,28 @@
                 slideSectionsIn(direction);
             }
 
+            function renderCard(item) {
+                const count = item.prerequisite_count;
+                const showBadgeText = typeof count === 'number' && count > 1;
+                const badgeText = showBadgeText ?
+                    `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/15 text-white/85 leading-none">+ متطلبات أخرى</span>` :
+                    '';
+
+                return `
+        <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
+            <div class="course-card">
+                <div class="card-header" style="background: ${item.color};">
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        <span>${escapeHtml(item.title)}</span>
+                        ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
+                        <span class="h-4 mt-1 flex items-center justify-center">${badgeText}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    `;
+            }
+
             function renderSection(label, emptyText, items) {
                 const header = `
         <h2 class="text-sm font-bold px-6 mb-2 text-slate-500 flex items-center gap-2">
@@ -236,28 +258,8 @@
                         `<div class="section-body"><p class="section-body-empty text-slate-400 text-sm">${emptyText}</p></div>`;
                 }
 
-                const cards = items.map(item => {
-                    const hasCount = typeof item.prerequisite_count === 'number';
-                    const isInvisible = item.prerequisite_count <= 1 ? 'invisible' : '';
-                    const badge = hasCount ?
-                        `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 bg-white/15 text-white/85 ${isInvisible}">+ متطلبات أخرى</span>` :
-                        '';
+                const cards = items.map(renderCard).join('');
 
-                    return `
-        <a href="/courses/${item.id}${selectedParam ? '?selected=' + selectedParam : ''}">
-            <div class="course-card">
-                <div class="card-header" style="background: ${item.color};">
-                    <div class="flex flex-col items-center justify-center gap-1">
-                        <span>${escapeHtml(item.title)}</span>
-                        ${item.code ? `<span class="text-[10px] font-mono font-normal tracking-widest opacity-75" dir="ltr">${escapeHtml(item.code)}</span>` : ''}
-                        ${badge}
-                    </div>
-                </div>
-            </div>
-        </a>
-    `;
-                }).join('');
-                
                 return header + `<div class="section-body"><div class="carousel-container">${cards}</div></div>`;
             }
 
