@@ -89,7 +89,7 @@
     <div id="view-bar"
         class="hidden fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-30">
         <a id="view-selection-btn" href="#"
-            class="block text-center bg-[#0a70dc] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl">
+            class="block text-center bg-[#0a74e5] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl">
             عرض
         </a>
     </div>
