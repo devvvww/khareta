@@ -89,7 +89,7 @@
     <div id="view-bar"
         class="hidden fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-30">
         <a id="view-selection-btn" href="#"
-            class="block text-center bg-[#0b7af1] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl">
+            class="block text-center bg-[#0a70dc] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl">
             عرض
         </a>
     </div>
@@ -280,7 +280,7 @@
             updateViewBar();
             syncSelectionToUrl();
         });
-        
+
         // If the user clicks a result row directly (intentionally, or by mistake
         // while aiming for the checkbox), carry the current selection along so
         // it isn't lost once they land on that course's show page.
