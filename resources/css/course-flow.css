@@ -255,6 +255,13 @@ body::-webkit-scrollbar {
     transition: opacity 0.15s ease;
 }
 
+.course-carousel-slide-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: opacity 0.15s ease;
+}
+
 .slide-label {
     transition: opacity 0.15s ease;
 }
