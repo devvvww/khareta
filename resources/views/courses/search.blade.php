@@ -217,12 +217,19 @@
                 results.innerHTML = courses.map(course => `
     <div class="flex items-center gap-2 border-b border-slate-50 last:border-0">
         <label class="search-result-row flex items-center gap-3 flex-1 min-w-0 px-4 py-2.5 cursor-pointer hover:bg-slate-50">
-            <input type="checkbox" class="course-checkbox hidden"
-                   data-id="${course.id}"
-                   data-name="${escapeHtml(course.name)}"
-                   data-code="${escapeHtml(course.code || '')}"
-                   data-color="${course.color}"
-                   ${selectedCourses.has(course.id) ? 'checked' : ''}>
+            <span class="relative w-5 h-5 shrink-0">
+                <input type="checkbox" class="course-checkbox absolute inset-0 opacity-0 cursor-pointer"
+                       data-id="${course.id}"
+                       data-name="${escapeHtml(course.name)}"
+                       data-code="${escapeHtml(course.code || '')}"
+                       data-color="${course.color}"
+                       ${selectedCourses.has(course.id) ? 'checked' : ''}>
+                <span class="check-indicator w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selectedCourses.has(course.id) ? 'bg-[#0b7af1] border-[#0b7af1]' : 'border-slate-300'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white ${selectedCourses.has(course.id) ? '' : 'hidden'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </span>
+            </span>
             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${course.color};"></span>
             <span class="text-sm text-slate-700 truncate">${escapeHtml(course.name)}</span>
             ${course.code ? `<span class="text-[10px] font-mono text-slate-400 shrink-0" dir="ltr">${escapeHtml(course.code)}</span>` : ''}
@@ -262,13 +269,18 @@
                 selectedCourses.delete(numId);
             }
 
-            e.target.closest('.search-result-row').classList.toggle('bg-[#0b7af1]/10', e.target.checked);
+            const indicator = e.target.parentElement.querySelector('.check-indicator');
+            const checkIcon = indicator.querySelector('svg');
+            indicator.classList.toggle('bg-[#0b7af1]', e.target.checked);
+            indicator.classList.toggle('border-[#0b7af1]', e.target.checked);
+            indicator.classList.toggle('border-slate-300', !e.target.checked);
+            checkIcon.classList.toggle('hidden', !e.target.checked);
 
             renderChips();
             updateViewBar();
             syncSelectionToUrl();
         });
-
+        
         // If the user clicks a result row directly (intentionally, or by mistake
         // while aiming for the checkbox), carry the current selection along so
         // it isn't lost once they land on that course's show page.
