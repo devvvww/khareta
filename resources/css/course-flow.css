@@ -57,6 +57,7 @@ body::-webkit-scrollbar {
    just with the title centered in the middle of it instead of pinned
    to the top. ---- */
 .card-header {
+    min-height: 97.67px;
     height: 100%;
     display: flex;
     align-items: center;
