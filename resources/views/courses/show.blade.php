@@ -98,6 +98,33 @@
 
         const carousel = document.getElementById('course-carousel');
         const idsParam = @json($idsParam);
+        const unlocksSection = document.getElementById('unlocks-section');
+        const prerequisitesSection = document.getElementById('prerequisites-section');
+
+        function equalizeSectionCardHeights() {
+            const cards = [
+                ...unlocksSection.querySelectorAll('.course-card'),
+                ...prerequisitesSection.querySelectorAll('.course-card'),
+            ];
+
+            if (cards.length === 0) return;
+
+            // Reset first so we measure true natural height, not a height
+            // left over from a previous pass.
+            cards.forEach(card => {
+                card.style.height = 'auto';
+            });
+
+            const maxHeight = Math.max(...cards.map(card => card.offsetHeight));
+
+            cards.forEach(card => {
+                card.style.height = `${maxHeight}px`;
+            });
+        }
+
+
+
+        equalizeSectionCardHeights();
 
         if (carousel) {
             const slides = [...carousel.querySelectorAll('.course-carousel-slide')];
@@ -217,6 +244,8 @@
                 prerequisitesSection.innerHTML =
                     renderSection('مواد مطلوبة لهذه المادة :', 'لا توجد مواد مطلوبة لهذه المادة', data.prerequisites);
 
+                equalizeSectionCardHeights();
+
                 document.title = `${data.title} — مسار المواد الدراسية`;
                 history.replaceState({}, '', url);
 
@@ -282,6 +311,7 @@
             window.addEventListener('resize', () => {
                 equalizeSlideHeights();
                 updateCarouselState();
+                equalizeSectionCardHeights();
             });
         }
     </script>
