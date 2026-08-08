@@ -265,6 +265,7 @@ body::-webkit-scrollbar {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-height: 150px;
     transition: opacity 0.15s ease;
 }
 
