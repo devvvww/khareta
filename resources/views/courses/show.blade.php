@@ -134,6 +134,34 @@
             let currentIndex = 0;
             let ticking = false;
 
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartScrollLeft = 0;
+
+            carousel.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                dragStartX = e.pageX;
+                dragStartScrollLeft = carousel.scrollLeft;
+                carousel.style.scrollSnapType = 'none'; // let free dragging feel smooth, snap resumes on release
+                carousel.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const delta = e.pageX - dragStartX;
+                carousel.scrollLeft = dragStartScrollLeft - delta;
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                carousel.style.scrollSnapType = 'x mandatory';
+                carousel.style.cursor = '';
+                // Let the existing scroll-settle logic (scrollEndTimer → loadClosestSlide)
+                // handle snapping/loading naturally, same as a touch swipe would.
+            });
+
 
             // Jump straight to the slide matching the course actually being viewed
             const currentSlide = slides.find(s => s.dataset.id == currentCourseId);
